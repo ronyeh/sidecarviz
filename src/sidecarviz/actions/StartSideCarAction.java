@@ -78,6 +78,8 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 						for (IJavaElement classElt : fes) {
 							String className = classElt.getElementName();
 							DebugUtils.println(className);
+							DebugUtils.println("Path: " + classElt.getPath().toPortableString());
+							// DebugUtils.println(classElt.getPath().getClass());
 							numClasses++;
 						}
 					}
@@ -92,9 +94,12 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	private void openFile() {
-		IFileStore fileStore = EFS.getLocalFileSystem().getStore(
-				new Path("C:/Documents and Settings/Ron Yeh/My Documents/Projects-EclipsePlugin"
-						+ "/TestApplication/src/edu/stanford/hci/TestApp.java"));
+
+		// get the filepath using a PaperToolkit method... then convert it to an Eclipse Filestore
+		String filepath = "C:/Documents and Settings/Ron Yeh/My Documents/Projects-EclipsePlugin"
+				+ "/TestApplication/src/edu/stanford/hci/TestApp.java";
+
+		IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(filepath));
 		try {
 			IEditorPart editor = IDE.openEditorOnFileStore(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage(), fileStore);
