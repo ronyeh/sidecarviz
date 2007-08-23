@@ -185,7 +185,7 @@ package components {
             _selectedIndex = value;
             
             // since we are going to use this value to index into the item renderers, we want to make sure we don't use a value outside the range of
-            // existing renderers. Rather than having to liter our code with those checks all over the place, we'll clamp it to the legal range once now 
+            // existing renderers. Rather than having to litter our code with those checks all over the place, we'll clamp it to the legal range once now 
             // and store off the 'safe' value.
             _safeSelectedIndex = Math.max(0,Math.min(_selectedIndex,_children.length-1));
 

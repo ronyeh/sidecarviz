@@ -11,14 +11,36 @@
 			import tools.Images;
 			import components.State;
 			
+			private var playTimer:Timer = new Timer(500);
+			
 			public function init():void {
 				shelf.itemRenderer = new ClassFactory(State);
+				playTimer.addEventListener(TimerEvent.TIMER, playTimerHandler);
 			}
 			
 			private function addState():void {
 				shelf.numItems = shelf.numItems+1;
 				shelf.selectedIndex = shelf.numItems-1;
-				
+			}
+			private function rewind():void {
+				shelf.selectedIndex = 0;
+			}
+			
+
+			private function playTimerHandler(e:TimerEvent):void {
+				shelf.selectedIndex = Math.min(shelf.selectedIndex + 1, shelf.numItems-1);
+				if (shelf.selectedIndex == shelf.numItems-1) {
+					playTimer.stop();
+				}
+			}
+			
+			private function play():void {
+				playTimer.reset();
+				playTimer.start();
+			}
+			
+			private function fastForward():void {
+				shelf.selectedIndex = shelf.numItems-1;
 			}
 		]]>
 	</mx:Script>
@@ -27,11 +49,34 @@
 		<components:DisplayShelf id="shelf" borderThickness="1" 
 			borderColor="#AAAAAA" enableHistory="false" width="100%" numItems="1"/>
 		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Button label="Rewind" click="rewind();"/>
+			<mx:Button label="Play" click="play();"/>
+			<mx:Button label="Fast Forward" click="fastForward();"/>
 			<mx:Label text="Timeline:" fontSize="15"/>
 			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="500" showDataTip="false"/>
-			<mx:Button label="Add State" click="addState()"/>
+			<mx:Button label="Add Input State" click="addState()"/>
 		</mx:HBox>
 	</mx:VBox>
 	
 	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+
+	<mx:HBox bottom="10" horizontalCenter="0">
+	<mx:DataGrid color="#000000" height="400">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Time" dataField="colTime" width="150"/>
+			<mx:DataGridColumn headerText="Class File" dataField="colClass"/>
+			<mx:DataGridColumn headerText="Handler Name" dataField="colHandler" width="200"/>
+			<mx:DataGridColumn headerText="Contents of println" dataField="colPrintlnContents" width="400"/>
+		</mx:columns>
+	</mx:DataGrid>
+	<mx:DataGrid color="#000000" height="400">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Time" dataField="colTime" width="100"/>
+			<mx:DataGridColumn headerText="Device Name" dataField="colClass"/>
+			<mx:DataGridColumn headerText="Action Type" dataField="colHandler" width="200"/>
+			<mx:DataGridColumn headerText="Contents of println" dataField="colPrintlnContents" width="300"/>
+		</mx:columns>
+	</mx:DataGrid>
+	</mx:HBox>
+	
 </mx:Application>
