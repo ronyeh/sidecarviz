@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	backgroundGradientColors="[0x000000, 0x333333]" pageTitle="SideCar" addedToStage="init();"
+	xmlns:components="components.*" xmlns:tools="tools.*" color="#FFFFFF" width="100%">
+	
+	<mx:Binding source="sel.value" destination="shelf.selectedIndex"/>
+	<mx:Binding destination="sel.value" source="shelf.selectedIndex"/>
+	
+	<mx:Script>
+		<![CDATA[
+			import tools.Images;
+			import components.State;
+			
+			public function init():void {
+				shelf.itemRenderer = new ClassFactory(State);
+			}
+			
+			private function addState():void {
+				shelf.numItems = shelf.numItems+1;
+				shelf.selectedIndex = shelf.numItems-1;
+				
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:VBox top="50" horizontalCenter="0" width="100%">
+		<components:DisplayShelf id="shelf" borderThickness="1" 
+			borderColor="#AAAAAA" enableHistory="false" width="100%" numItems="1"/>
+		<mx:HBox width="100%" horizontalAlign="center">
+			<mx:Label text="Timeline:" fontSize="15"/>
+			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="500" showDataTip="false"/>
+			<mx:Button label="Add State" click="addState()"/>
+		</mx:HBox>
+	</mx:VBox>
+	
+	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+</mx:Application>
