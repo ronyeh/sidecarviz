@@ -1,21 +1,15 @@
 package sidecarviz;
 
-import java.io.File;
-
-import papertoolkit.PaperToolkit;
-import papertoolkit.application.Application;
-import papertoolkit.util.DebugUtils;
+import sidecarviz.papertoolkit.SideCarApplication;
 
 public class SideCarVisualizations {
 
 	public SideCarVisualizations() {
-		Application app = PaperToolkit.createApplication();
+		SideCarApplication app = new SideCarApplication();
 		app.run();
 	}
 
 	public static void main(String[] args) {
-
 		new SideCarVisualizations();
-
 	}
 }
