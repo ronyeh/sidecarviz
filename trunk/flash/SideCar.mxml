@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
 	backgroundGradientColors="[0x000000, 0x333333]" pageTitle="SideCar" addedToStage="init();"
-	xmlns:components="components.*" xmlns:tools="tools.*" color="#FFFFFF" width="100%">
+	xmlns:components="components.*" xmlns:tools="tools.*" color="#BBBBBB" width="100%">
 	
 	<mx:Binding source="sel.value" destination="shelf.selectedIndex"/>
 	<mx:Binding destination="sel.value" source="shelf.selectedIndex"/>
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.controls.Alert;
+			import mx.events.MenuEvent;
 			import tools.Images;
 			import components.State;
 			
@@ -17,6 +19,7 @@
 			private var halfWindowHeight:int = 200;
 			
 			public function init():void {
+				shelfContainer.visible = true;
 				halfWindowHeight = height/2;
 				shelf.itemRenderer = new ClassFactory(State);
 				playTimer.addEventListener(TimerEvent.TIMER, playTimerHandler);
@@ -48,12 +51,23 @@
 			private function fastForward():void {
 				shelf.selectedIndex = shelf.numItems-1;
 			}
+			
+			public function itemClickHandler(event:MenuEvent):void {
+				Alert.show("Menu Label: " + event.label + " Item #" + event.index);
+			}
 		]]>
 	</mx:Script>
 
-	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+	<mx:XMLList id="menuItems">
+		<node label="Connect"/>		
+		<node label="Exit"/>		
+	</mx:XMLList>
+
+		<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="itemClickHandler(event);" dataProvider="{menuItems}" color="#CCCCCC" 
+			fillColors="[0x444444, 0x666666]" fontSize="14" borderColor="0x000000" right="10" top="10"/>
 	
-	<mx:VBox top="10" horizontalCenter="0" width="100%">
+	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false">
 		<components:DisplayShelf id="shelf" borderThickness="1" 
 			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" numItems="1" gap="{halfWindowHeight/2.3}"/>
 		<mx:HBox width="100%" horizontalAlign="center">
