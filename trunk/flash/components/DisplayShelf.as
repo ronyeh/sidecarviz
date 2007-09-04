@@ -36,6 +36,8 @@ package components {
     [DefaultProperty("dataProvider")]
 
 	[DefaultProperty("numItems")]
+
+	[DefaultProperty("gap")]
     
     /* our custom component. Note a few things:
     /  1. we're extending UIComponent, not Canvas or some other Container. It's a common misconception that if you're going to
@@ -48,8 +50,8 @@ package components {
     /  to do this is already supported in UICompoent, our base class...all we need to do is add this 'marker' interface, and override the keyDownHandler method to add our
     /  logic to interpret keystrokes.    
     */
-    public class DisplayShelf extends UIComponent implements IHistoryManagerClient, IFocusManagerComponent
-    {
+    public class DisplayShelf extends UIComponent implements IHistoryManagerClient, IFocusManagerComponent {
+    	
         //---------------------------------------------------------------------------------------
         // constants
         //---------------------------------------------------------------------------------------
@@ -57,7 +59,7 @@ package components {
         // how far, in pixels, each child will be spaced when stacked sideways. 
         // This probably should be a percentage of the size of the children...i.e., overlap 1/5th...but
         // we're taking a shortcut here by defining it in pixels.        
-        private const kPaneGap:Number = 100;
+        private var kPaneGap:Number = 100;
 
         //---------------------------------------------------------------------------------------
         // private state
@@ -74,7 +76,7 @@ package components {
         // our array of children.  These are the TiltingTiles that we'll generate, one for each item in the dataProvider.
         private var _children:Array = [];
         // the tilt angle for the non-selected children. This can be set by the developer.
-        private var _angle:Number = 10;
+        private var _angle:Number = 5;
         // the current selected index, as set by the developer.
         private var _selectedIndex:Number = 0;        
         // the index (or rather, value, since it can be fractional) of the item at the center of our list as currently displayed. Since we animate from
@@ -112,7 +114,9 @@ package components {
 		
 		private var nItems:int = 1;
 		
-		        
+		public function set gap(g:int):void {
+            kPaneGap = g;
+		}
 
         //---------------------------------------------------------------------------------------
         // constructor
@@ -120,6 +124,7 @@ package components {
 
         public function DisplayShelf() {
             super();
+            
             
             // we register with the history manager to let it know that we will want to save state whenever someone tells the history manager to remember
             // the current state of the application.
@@ -349,19 +354,10 @@ package components {
                     *    know exactly what it is that it's going to be tilting.  To do that, we ask our itemRenderer factory to create an instance for us.
                     */
                     var content:UIComponent = UIComponent(_itemRenderer.newInstance());
-                    /*     of course, in order to render our data, the itemRenderer instance  needs to know what it's going to be rendering.  
-                    *    In flex, things that render data implement the IDataRenderer interface.  Since we can't imagine someone using this component
-                    *    in a way that didn't require the individual item renderers to know what data they're rendering, we're going to go ahead
-                    *    and assume that our new item renderer instance implements the IDataRenderer interface.  So we'll use it to assign the nth item
-                    *    out of the dataProvider to our nth item renderer instance.
-                    */
 
-
-                    /*    OK, we've got an item renderer instance that now owns an item from the dataProvider. We'll put that in our tilting tile,
-                    *    and add the tilting tile as a child.
-                    */
-                    // t.content = content;
-                    t.content = new State();
+					var state:State = new State();
+					state.pageHeight = height;
+                    t.content = state;
                     
                     addChildAt(t,0);
                 }
