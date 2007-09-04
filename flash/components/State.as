@@ -9,17 +9,26 @@ package components
 	public class State extends UIComponent {
 		
 		private var shape:Sprite = new Sprite();
+		private var pageHeightVal:int = 200;
 		 
 		public function State():void {
-			explicitWidth = 300;
-			explicitHeight = explicitWidth*11/8.5;
-
+			pageHeight = pageHeightVal;
+			addChild(shape);
+		}
+		
+		public function set pageHeight(h:int):void {
+			pageHeightVal = h;
+			explicitHeight = pageHeightVal;
+			explicitWidth = explicitHeight*8.5/11;
+			draw();
+		}
+		
+		private function draw():void {
 			var g:Graphics = shape.graphics;
 			g.clear();
 			g.beginFill(0xFFFFFF, 0.99);
-			g.drawRect(0,0,explicitWidth,explicitHeight);
+			g.drawRect(0, 0, explicitWidth, explicitHeight);
 			g.endFill();
-			addChild(shape);	
 		}
 	}
 }

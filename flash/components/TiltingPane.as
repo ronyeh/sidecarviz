@@ -123,8 +123,7 @@ package components {
         *    UIComponent, we actually are allowing the developer to specify the content in MXML or actionscript.
         *    This ability to parameterize the content of a component is often referred to as Templating.
         */
-        public function set content(value:UIComponent):void
-        {
+        public function set content(value:UIComponent):void {
             // if we had a previous content assigned, we need to clean up from it.
             if(_content != null)
             {
