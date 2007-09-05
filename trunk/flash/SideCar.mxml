@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
 	backgroundGradientColors="[0x000000, 0x333333]" pageTitle="SideCar" addedToStage="init();"
-	xmlns:components="components.*" xmlns:tools="tools.*" color="#BBBBBB" width="100%">
+	xmlns:components="components.*" xmlns:tools="tools.*" color="#BBBBBB" width="100%" height="100%">
+
+	<mx:Style source="styles.css"/>
 	
 	<mx:Binding source="sel.value" destination="shelf.selectedIndex"/>
 	<mx:Binding destination="sel.value" source="shelf.selectedIndex"/>
@@ -17,6 +19,11 @@
 
 			[Bindable]
 			private var halfWindowHeight:int = 200;
+
+			
+			private const defaultSearchText:String = "type here";
+			
+			
 			
 			public function init():void {
 				shelfContainer.visible = true;
@@ -55,6 +62,46 @@
 			public function itemClickHandler(event:MenuEvent):void {
 				Alert.show("Menu Label: " + event.label + " Item #" + event.index);
 			}
+			
+			public function toggleInteractionHistoryVisibility():void {
+				if (interactionHistory.alpha > 0) {
+					fOutHistory.play();
+				} else {
+					fInHistory.play();
+				}
+			}
+			
+			public function endFadeOut():void {
+				interactionHistory.visible = false;
+				historyButton.label = "Show History";
+			}
+			public function startFadeIn():void {
+				interactionHistory.visible = true;
+				historyButton.label = "Hide History";
+			}
+			
+			public function searchBoxFocusOut():void {
+				if (searchBox.text == "") {
+					searchBox.text = defaultSearchText;
+					searchBox.setStyle("color", "0xAAAAAA");
+				}
+			}
+			
+			public function searchBoxClicked():void {
+				if (searchBox.text == defaultSearchText) {
+					searchBox.text = "";
+					searchBox.setStyle("color", "0x222222");
+				}
+			}
+			public function searchBoxClearClicked():void {
+				searchBox.text = defaultSearchText;
+				searchBox.setStyle("color", "0xAAAAAA");
+			}
+			public function searchBoxSubmitted():void {
+				if (searchBox.text != defaultSearchText) {
+					trace("Searching for: " + searchBox.text);
+				}
+			}
 		]]>
 	</mx:Script>
 
@@ -63,25 +110,54 @@
 		<node label="Exit"/>		
 	</mx:XMLList>
 
-		<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
-		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="itemClickHandler(event);" dataProvider="{menuItems}" color="#CCCCCC" 
-			fillColors="[0x444444, 0x666666]" fontSize="14" borderColor="0x000000" right="10" top="10"/>
-	
-	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false">
-		<components:DisplayShelf id="shelf" borderThickness="1" 
+	<mx:Fade id="fOutHistory" alphaTo="0" target="{interactionHistory}" effectEnd="endFadeOut()"/>
+	<mx:Fade id="fInHistory" alphaTo="0.7" target="{interactionHistory}" effectStart="startFadeIn()"/>
+
+	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+
+	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false">
+		<components:DisplayShelf id="shelf" borderThickness="1" focusEnabled="false"
 			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" numItems="1" gap="{halfWindowHeight/2.3}"/>
 		<mx:HBox width="100%" horizontalAlign="center">
-			<mx:Button label="Rewind" click="rewind();"/>
-			<mx:Button label="Play" click="play();"/><!-- Becomes Stop //-->
-			<mx:Button label="Fast Forward" click="fastForward();"/>
+			<mx:Button label="Rewind" styleName="button" click="rewind();"/>
+			<mx:Button label="Play" styleName="button" click="play();"/><!-- Becomes Stop //-->
+			<mx:Button label="Fast Forward" styleName="button" click="fastForward();"/>
 			<mx:Label text="Timeline:" fontSize="15"/>
-			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="500" showDataTip="false"/>
-			<mx:Button label="Add Input State" click="addState()"/>
+			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="500" showDataTip="false" focusEnabled="false"/>
+			<mx:Button label="Add Input State" styleName="button" click="addState()"/>
 		</mx:HBox>
 	</mx:VBox>
-	
 
-	<mx:DataGrid color="#000000" height="40%" bottom="10" left="10" right="10">
+	
+	<!-- This control is kinda wonky, and sometimes introduces a cyan bar on the top of the SWF. Consider using something else. //-->
+	<mx:ApplicationControlBar right="10" top="10" dock="false">
+		<mx:Label text="Search:"/>
+		<mx:Canvas width="100%" maxWidth="200">
+			<mx:Button label="×" right="-8" verticalCenter="0" fontSize="14" click="searchBoxClearClicked()" focusEnabled="false">
+				<mx:upSkin>
+					@Embed('images/spacer.gif')
+				</mx:upSkin>
+				<mx:overSkin>
+					@Embed('images/spacer.gif')
+				</mx:overSkin>
+				<mx:downSkin>
+					@Embed('images/spacer.gif')
+				</mx:downSkin>
+			</mx:Button>
+			<mx:TextInput id="searchBox" text="{defaultSearchText}" verticalCenter="-1" right="0" click="searchBoxClicked();" 
+				enter="searchBoxSubmitted()" color="0xAAAAAA" focusOut="searchBoxFocusOut()" focusIn="searchBoxClicked()"/>
+		</mx:Canvas>
+		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="itemClickHandler(event);" dataProvider="{menuItems}" styleName="button"/>
+	</mx:ApplicationControlBar>
+
+	<mx:Canvas top="50" right="10" height="45%">
+		<components:InteractionHistory id="interactionHistory" width="100%" height="100%"/>
+		<mx:Button id="historyButton" label="Hide History" click="toggleInteractionHistoryVisibility()" right="8" top="2" styleName="smallButton" height="18"/>
+	</mx:Canvas>
+
+	<components:SystemInternals id="systemInternals" top="50" left="10" height="45%"/>
+
+	<mx:DataGrid color="#000000" height="40%" bottom="10" left="10" right="10" focusEnabled="false">
 		<mx:columns>
 			<mx:DataGridColumn headerText="Time" dataField="colTime" width="200"/>
 			<mx:DataGridColumn headerText="Component/Device" dataField="colClass" width="150"/>
@@ -89,5 +165,6 @@
 			<mx:DataGridColumn headerText="Contents of println" dataField="colPrintlnContents"/>
 		</mx:columns>
 	</mx:DataGrid>
+	
 	
 </mx:Application>
