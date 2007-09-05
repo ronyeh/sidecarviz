@@ -1,20 +1,12 @@
-body {
-	background: #111111; 
-	font: 14px 'Myriad Pro', Geneva, Tahoma, Trebuchet MS, Verdana, Arial, sans-serif; 
+.button {
 	color: #DDDDDD;
+	borderColor: #111111;
+	fontSize: 13;
+	fillColors: #444444, #666666;
 }
-
-a {
-	color: #AAAAFF;
-	text-decoration: none;
-}
-
-a:visited {
-	color: #BB77AA;
-	text-decoration: none;
-}
-
-a:hover {
-	cursor: pointer;
-	text-decoration: underline;
+.smallButton {
+	color: #DDDDDD;
+	borderColor: #111111;
+	fontSize: 9;
+	fillColors: #444444, #666666;
 }
