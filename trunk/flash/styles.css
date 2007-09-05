@@ -1,3 +1,9 @@
+.tree {
+	color: #000000;
+	borderColor: #000000;
+	fontSize: 10;
+	fillColors: #444444, #666666;
+}
 .button {
 	color: #DDDDDD;
 	borderColor: #111111;
