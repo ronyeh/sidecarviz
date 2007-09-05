@@ -22,6 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
+import papertoolkit.util.TestUtil;
 
 /**
  * <p>
@@ -50,8 +51,10 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 	public void run(IAction action) {
 		DebugUtils.println("Run: " + action);
 
+		new TestUtil();
+
 		// openFile();
-		traverseWorkspace();
+		// traverseWorkspace();
 	}
 
 	private void traverseWorkspace() {
