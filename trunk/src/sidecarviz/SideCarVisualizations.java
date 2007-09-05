@@ -1,12 +1,11 @@
 package sidecarviz;
 
-import sidecarviz.papertoolkit.SideCarApplication;
+import papertoolkit.util.DebugUtils;
 
 public class SideCarVisualizations {
 
 	public SideCarVisualizations() {
-		SideCarApplication app = new SideCarApplication();
-		app.run();
+		DebugUtils.println("Hello!!!");
 	}
 
 	public static void main(String[] args) {
