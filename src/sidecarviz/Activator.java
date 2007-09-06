@@ -18,10 +18,11 @@ public class Activator extends AbstractUIPlugin {
 	private static Activator plugin;
 	
 	/**
-	 * The constructor
+	 * The constructor is called once any part of the plugin is accessed.
 	 */
 	public Activator() {
-		DebugUtils.println("Activating SideCarViz");
+		// Initialize SideCar Here...
+		SideCarVisualizations.getInstance();
 	}
 
 	/*
@@ -40,6 +41,7 @@ public class Activator extends AbstractUIPlugin {
 	public void stop(BundleContext context) throws Exception {
 		plugin = null;
 		super.stop(context);
+		SideCarVisualizations.getInstance().stop();
 	}
 
 	/**

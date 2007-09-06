@@ -22,7 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
-import papertoolkit.util.TestUtil;
+import sidecarviz.SideCarVisualizations;
 
 /**
  * <p>
@@ -41,20 +41,22 @@ import papertoolkit.util.TestUtil;
 public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 
 	public void dispose() {
-		DebugUtils.println("Dispose");
+		// DebugUtils.println("Dispose");
 	}
 
 	public void init(IWorkbenchWindow window) {
-		DebugUtils.println("Init: " + window);
+		// DebugUtils.println("Init: " + window);
+		
 	}
 
+	/**
+	 * The green Saturn button is pressed.
+	 */
 	public void run(IAction action) {
-		DebugUtils.println("Run: " + action);
-
-		new TestUtil();
-
+		//DebugUtils.println("Run: " + action);
 		// openFile();
 		// traverseWorkspace();
+		SideCarVisualizations.getInstance().connectToWebBrowser();
 	}
 
 	private void traverseWorkspace() {
