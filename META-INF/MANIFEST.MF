@@ -17,4 +17,5 @@ Require-Bundle:
  org.eclipse.jdt.ui
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
- ../PaperToolkit/bin/.
+ ../PaperToolkit/bin/.,
+ ../PaperToolkit/lib/xstream-1.1.3.jar
