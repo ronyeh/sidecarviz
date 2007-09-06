@@ -6,9 +6,8 @@ import sidecarviz.core.SideCarServer;
 
 /**
  * <p>
- * This is the core SideCarVisualizations program.
- * Note: when debugging an Eclipse plugin, you should tail the .log file located at:
- * C:\Documents and Settings\Ron Yeh\My Documents\Projects-EclipsePlugin\.metadata\.log
+ * This is the core SideCarVisualizations program. Note: when debugging an Eclipse plugin, you should tail the
+ * .log file located at: C:\Documents and Settings\Ron Yeh\My Documents\Projects-EclipsePlugin\.metadata\.log
  * </p>
  * <p>
  * <span class="BSDLicense"> This software is distributed under the <a
@@ -46,7 +45,6 @@ public class SideCarVisualizations {
 		// start a server here... (43210)
 		sideCarServer = new SideCarServer();
 
-		DebugUtils.println("Yay...");
 
 		// The green button opens firefox (which starts its own server at 54321)
 
@@ -61,8 +59,8 @@ public class SideCarVisualizations {
 	 */
 	public void connectToWebBrowser() {
 		DebugUtils.println("Connect to Web Browser");
-		// sideCarClient = new SideCarClient("localhost", 54321);
-		// sideCarClient.setCommandHandler(sideCarServer);
+		sideCarClient = new SideCarClient("localhost", 54321);
+		sideCarClient.setCommandHandler(sideCarServer);
 	}
 
 	public void stop() {
