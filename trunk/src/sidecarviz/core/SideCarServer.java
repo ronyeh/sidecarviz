@@ -6,24 +6,26 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import papertoolkit.flash.FlashCommand;
-import papertoolkit.flash.FlashCommunicationServer;
+import papertoolkit.application.config.Constants.Ports;
+import papertoolkit.external.ExternalCommand;
+import papertoolkit.external.ExternalCommunicationServer;
 import papertoolkit.util.DebugUtils;
 
 public class SideCarServer {
-	private FlashCommunicationServer server;
+	private ExternalCommunicationServer server;
+
 
 	public SideCarServer() {
 		// [[commandName]]{{arg1}}{{arg2}}{{arg3}}
 		DebugUtils.println("Starting External Communications Server");
-		server = new FlashCommunicationServer(43210);
+		server = new ExternalCommunicationServer(Ports.SIDE_CAR_COMMUNICATIONS);
 		addSupportedCommands();
 		DebugUtils.println("Server Started");
 	}
 
 	private void addSupportedCommands() {
 		// takes one argument, the URL
-		server.addCommand("SC::ClipboardContentsChanged", new FlashCommand() {
+		server.addCommand("SC::ClipboardContentsChanged", new ExternalCommand() {
 			// url
 			// clipboard contents
 			public void invoke(String... args) {
@@ -41,19 +43,30 @@ public class SideCarServer {
 				}
 			}
 		});
-		server.addCommand("SC::NewPage", new FlashCommand() {
+		server.addCommand("SC::NewPage", new ExternalCommand() {
 			public void invoke(String... args) {
 				DebugUtils.println("Browsed to URL: " + args[0]);
 			}
 		});
-		server.addCommand("SC::NewTab", new FlashCommand() {
+		server.addCommand("SC::NewTab", new ExternalCommand() {
 			public void invoke(String... args) {
 				DebugUtils.println("New Firefox Tab");
 			}
 		});
-		server.addCommand("SC::UserTyped", new FlashCommand() {
+		server.addCommand("SC::UserTyped", new ExternalCommand() {
 			public void invoke(String... args) {
 				DebugUtils.println("User Typed: " + args[0]);
+			}
+		});
+		server.addCommand("StartFlexGUI", new ExternalCommand() {
+			public void invoke(String... args) {
+				DebugUtils.println("Starting the SideCar Flex GUI");
+				
+				// connect to the toolkit monitoring service...
+				
+				// open the sidecar flex gui...
+				
+				
 			}
 		});
 	}

@@ -22,7 +22,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
-import sidecarviz.SideCarVisualizations;
+import sidecarviz.core.SideCarVisualizations;
 
 /**
  * <p>
