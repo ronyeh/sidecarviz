@@ -7,6 +7,7 @@ import papertoolkit.events.handlers.LocationHandler;
 import papertoolkit.events.handlers.ClickHandler.ClickAdapter;
 import papertoolkit.paper.Region;
 import papertoolkit.paper.Sheet;
+import papertoolkit.pen.ink.InkStroke;
 import papertoolkit.util.DebugUtils;
 
 public class PaperApp {
@@ -27,7 +28,7 @@ public class PaperApp {
 		});
 		Region inkRegion = genericPage.createRegion(5, 5, 5, 5);
 		inkRegion.addEventHandler(new LocationHandler() {
-			public void strokeArrived(PenEvent e) {
+			public void strokeArrived(PenEvent e, InkStroke s) {
 				DebugUtils.println("Stroke Arrived");
 			}
 		});
