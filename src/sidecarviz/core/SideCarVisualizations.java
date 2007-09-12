@@ -1,8 +1,6 @@
-package sidecarviz;
+package sidecarviz.core;
 
 import papertoolkit.util.DebugUtils;
-import sidecarviz.core.SideCarClient;
-import sidecarviz.core.SideCarServer;
 
 /**
  * <p>
@@ -39,7 +37,13 @@ public class SideCarVisualizations {
 	private SideCarClient sideCarClient;
 	private SideCarServer sideCarServer;
 
-	public SideCarVisualizations() {
+	/**
+	 * The Firefox Server can start before this.<br>
+	 * The Eclipse Plugin is Launched when Eclipse starts<br>
+	 * This starts before the PaperToolkit.<br>
+	 * Finally, the flex application starts.<br>
+	 */
+	private SideCarVisualizations() {
 		DebugUtils.println("Initializing SideCar...");
 
 		// start a server here... (43210)
