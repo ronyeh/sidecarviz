@@ -4,6 +4,7 @@ import java.awt.HeadlessException;
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
 import java.io.IOException;
 
 import papertoolkit.application.config.Constants.Ports;
@@ -13,14 +14,15 @@ import papertoolkit.util.DebugUtils;
 
 public class SideCarServer {
 	private ExternalCommunicationServer server;
+	private SideCarVisualizations viz;
 
-
-	public SideCarServer() {
+	public SideCarServer(SideCarVisualizations scv) {
+		viz = scv;
 		// [[commandName]]{{arg1}}{{arg2}}{{arg3}}
-		DebugUtils.println("Starting External Communications Server");
+		// DebugUtils.println("Starting External Communications Server");
 		server = new ExternalCommunicationServer(Ports.SIDE_CAR_COMMUNICATIONS);
 		addSupportedCommands();
-		DebugUtils.println("Server Started");
+		// DebugUtils.println("Server Started");
 	}
 
 	private void addSupportedCommands() {
@@ -61,12 +63,12 @@ public class SideCarServer {
 		server.addCommand("StartFlexGUI", new ExternalCommand() {
 			public void invoke(String... args) {
 				DebugUtils.println("Starting the SideCar Flex GUI");
-				
+
 				// connect to the toolkit monitoring service...
+				viz.connectToTheToolkit();
 				
 				// open the sidecar flex gui...
-				
-				
+				openFlashGUI();
 			}
 		});
 	}
@@ -77,5 +79,14 @@ public class SideCarServer {
 
 	public void handleCommand(String line) {
 		server.handleCommand(line);
+	}
+	
+	private void openFlashGUI() {
+		final File sidecarHTML = new File("flash/bin/SideCar.html");
+		server.openFlashHTMLGUI(sidecarHTML);
+	}
+
+	public void sendToFlashGUI(String message) {
+		server.sendMessage(message);
 	}
 }
