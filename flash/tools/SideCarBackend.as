@@ -30,16 +30,6 @@ package tools {
 		}
 
 		
-		public function addData(time:String, where:String, event:String, info:String):void {
-			// convert time into a readable string...
-			var date:Date = new Date();
-			date.time = parseInt(time);
-			trace(date + " " + where + " " + event + " " + info);
-			lastItem = {Time:date, Class:where, Handler:event, PrintlnContents:info};
-			printlnData.addItem(lastItem);
-			// set a timer to scroll to the bottom after a second
-			scrollTimer.start();
-		}
 
 		public function makeLastItemVisible(e:TimerEvent=null):void {
 			scrollTimer.stop();
@@ -87,5 +77,31 @@ package tools {
     	        	break;
             }
         }
+
+
+
+
+
+
+		public function addData(time:String, where:String, event:String, info:String):void {
+			// convert time into a readable string...
+			var date:Date = new Date();
+			date.time = parseInt(time);
+			trace(date + " " + where + " " + event + " " + info);
+			lastItem = {Time:date, Class:where, Handler:event, PrintlnContents:info};
+			printlnData.addItem(lastItem);
+			// set a timer to scroll to the bottom after a second
+			scrollTimer.start();
+		}
+
+		public function addSheet(sheetName:String):void {
+			
+		}
+		public function addRegion(regName:String, sheetName:String):void {
+			
+		}
+		public function addHandler(handlerName:String, regName:String, sheetName:String):void {
+			
+		}
 	}
 }

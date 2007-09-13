@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="400" alpha="0.75" backgroundColor="0x333333"
-	borderStyle="solid" borderThickness="1" borderColor="0x525252" clipContent="false" horizontalScrollPolicy="off" verticalScrollPolicy="off">
+	borderStyle="solid" borderThickness="1" borderColor="0x525252" clipContent="false" horizontalScrollPolicy="off" verticalScrollPolicy="off" addedToStage="init()">
 
 	<mx:Script>
 		<![CDATA[
+			import mx.collections.XMLListCollection;
 			import mx.controls.Tree;
 			import mx.controls.Alert;
 			import tools.Images;
@@ -22,16 +23,59 @@
 				}
 			}
 			
+			[Bindable]
+			private var treeDataCollection:XMLListCollection;
+			private var timerExpandTree:Timer;
+			
+			public function init():void {
+				timerExpandTree = new Timer(1000);
+				timerExpandTree.addEventListener(TimerEvent.TIMER, timerExpandHandler);
+
+				treeDataCollection = new XMLListCollection();
+				treeDataCollection.addItem(
+					<node label="Sheet A" nodeType="Sheet">
+			            <node label="Region 1" nodeType="Region">
+			                <node label="InkHandler" nodeType="Handler"/>
+			                <node label="HandwritingRecognizer" nodeType="Handler"/>
+			            </node>
+			        </node>);
+				paperUITree.dataProvider = treeDataCollection;
+				addSheetItem("Bob");
+				addRegionItem("Regioo", "Bob");
+				
+			}
+
+			public function timerExpandHandler(e:TimerEvent):void {
+				timerExpandTree.stop();
+				for (var i:int=0; i<treeDataCollection.length; i++) {
+					var obj:Object = treeDataCollection.getItemAt(i);
+					trace("expanding item: " + i + " " + obj);
+					paperUITree.expandChildrenOf(obj, true);
+				}
+			}
+			
 			public function treeChanged(event:Event):void {
 				selectedNode = (event.target as Tree).selectedItem as XML;
 				trace(selectedNode.@label);
-				
 			}
 			
-			public function initTree():void {
-				for (var i:int=0; i<treeDataCollection.length; i++) {
-					paperUITree.expandChildrenOf(treeDataCollection.getItemAt(i), true);
-				}
+			private var item:XML;
+			public function addSheetItem(sheetName:String):void {
+				item = <sheet label={sheetName} nodeType="Sheet"/>;
+				treeDataCollection.addItem(item);
+				timerExpandTree.start();
+			}
+			
+			// we keep a map of sheetNames to XML sheet items... we can append children faster that way
+			public function addRegionItem(regionName:String, sheetName:String):void {
+				item.appendChild(<region label={regionName} nodeType="Region"/>);
+				timerExpandTree.start();
+			}
+			
+			// we keep a map of sheetName_regionName, and assume that is unique...
+			public function addHandlerItem(handlerName:String, regionName:String, sheetName:String):void {
+				
+				//
 				
 			}
 		]]>
@@ -41,52 +85,32 @@
 	<mx:VBox top="10" left="10" width="100%" height="100%" right="10">
 		
 
-	<!-- Image of one or more Pens, with a panel to show pen data as it comes in... //-->
-	<mx:HBox top="0" left="0" right="0" width="100%" verticalAlign="top">
-		<mx:VBox horizontalAlign="right" verticalAlign="top" verticalGap="0">
-			<mx:Label text="Pen 1" styleName="detailsText"/>
-			<mx:HBox horizontalGap="0" >
-				<mx:Image id="pen1" source="{Images.PenActive}" click="Alert.show('Pen 1 Clicked');" buttonMode="true"/>
-				<mx:Image id="pen2" source="{Images.PenInactive}" click="Alert.show('Pen 2 Clicked');" buttonMode="true"/>
-				<mx:Image id="pen3" source="{Images.PenInactive}" click="Alert.show('Pen 3 Clicked');" buttonMode="true"/>
-				<mx:Image id="pen4" source="{Images.PenInactive}" click="Alert.show('Pen 4 Clicked');" buttonMode="true"/>
-			</mx:HBox>
-		</mx:VBox>
-		<mx:VBox width="100%" height="100%" horizontalAlign="left" verticalGap="0">
-			<mx:HBox width="100%">
-				<mx:Text styleName="detailsText" text="12 strokes"/>
-				<mx:Spacer width="70%"/>
-				<mx:Text styleName="detailsText" text="3:06:23 PM"/>
-			</mx:HBox>
-			<mx:Canvas backgroundColor="0x000000" width="100%" height="100%" borderThickness="2" borderColor="0x333333" borderStyle="solid" cornerRadius="10"/>
-		</mx:VBox>
-	</mx:HBox>
+		<!-- Image of one or more Pens, with a panel to show pen data as it comes in... //-->
+		<mx:HBox top="0" left="0" right="0" width="100%" verticalAlign="top">
+			<mx:VBox horizontalAlign="right" verticalAlign="top" verticalGap="0">
+				<mx:Label text="Pen 1" styleName="detailsText"/>
+				<mx:HBox horizontalGap="0" >
+					<mx:Image id="pen1" source="{Images.PenActive}" click="Alert.show('Pen 1 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen2" source="{Images.PenInactive}" click="Alert.show('Pen 2 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen3" source="{Images.PenInactive}" click="Alert.show('Pen 3 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen4" source="{Images.PenInactive}" click="Alert.show('Pen 4 Clicked');" buttonMode="true"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="100%" height="100%" horizontalAlign="left" verticalGap="0">
+				<mx:HBox width="100%">
+					<mx:Text styleName="detailsText" text="12 strokes"/>
+					<mx:Spacer width="70%"/>
+					<mx:Text styleName="detailsText" text="3:06:23 PM"/>
+				</mx:HBox>
+				<mx:Canvas backgroundColor="0x000000" width="100%" height="100%" borderThickness="2" borderColor="0x333333" borderStyle="solid" cornerRadius="10"/>
+			</mx:VBox>
+		</mx:HBox>
 
 		<!-- Tree List of Sheets, Regions, Handlers... to provide quick access //-->
 		<mx:Tree id="paperUITree" top="95" left="10" right="10" width="100%" height="100%" 
 			labelField="@label" styleName="tree" defaultLeafIcon="{Images.Handler}" 
-			iconFunction="iconFunction" change="treeChanged(event);" creationComplete="initTree();">
-	
-			<mx:XMLListCollection id="treeDataCollection">
-				<mx:XMLList id="treeData">
-			        <node label="Sheet A" nodeType="Sheet">
-			            <node label="Region 1" nodeType="Region">
-			                <node label="InkHandler" nodeType="Handler"/>
-			                <node label="HandwritingRecognizer" nodeType="Handler"/>
-			            </node>
-			        </node>
-			        <node label="Sheet B" nodeType="Sheet">
-			            <node label="Region 1" nodeType="Region">
-			                <node label="InkHandler" nodeType="Handler"/>
-			            </node>
-			            <node label="Region 2" nodeType="Region">
-			                <node label="ClickAdapter" nodeType="Handler"/>
-			            </node>
-			        </node>    
-			    </mx:XMLList>	
-			</mx:XMLListCollection>
-	
-		</mx:Tree>
+			iconFunction="iconFunction" change="treeChanged(event);" 
+			dataProvider=""/>
 		<mx:HBox horizontalGap="0" verticalAlign="middle" width="100%">
 			<mx:Label styleName="detailsText" text="Last Edit:"/>
 			<mx:VBox>
