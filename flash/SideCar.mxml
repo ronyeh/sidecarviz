@@ -10,6 +10,7 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import tools.SideCarBackend;
 			import mx.controls.Alert;
 			import mx.events.MenuEvent;
 			import tools.Images;
@@ -20,12 +21,13 @@
 			[Bindable]
 			private var halfWindowHeight:int = 200;
 
-			
 			private const defaultSearchText:String = "type here";
 			private var isPlaying:Boolean = false;
-			
+			private var sidecarviz:SideCarBackend;
 			
 			public function init():void {
+				sidecarviz = new SideCarBackend(this);
+				
 				shelfContainer.visible = true;
 				halfWindowHeight = height/2;
 				shelf.itemRenderer = new ClassFactory(State);
@@ -192,14 +194,14 @@
 		<mx:Button id="detailsButton" label="Hide" click="toggleDetailsVisibility()" left="8" top="2" styleName="smallButton" height="18"/>
 	</mx:Canvas>
 
-	<mx:DataGrid color="#000000" height="42%" bottom="5" left="10" right="10" focusEnabled="false">
+	<!-- The Println Data Goes Here... //-->
+	<mx:AdvancedDataGrid id="printlnGrid" color="#000000" height="42%" bottom="5" left="10" right="10" focusEnabled="false" fontSize="12">
 		<mx:columns>
-			<mx:DataGridColumn headerText="Time" dataField="colTime" width="200"/>
-			<mx:DataGridColumn headerText="Component/Device" dataField="colClass" width="150"/>
-			<mx:DataGridColumn headerText="Handler/Action" dataField="colHandler" width="150"/>
-			<mx:DataGridColumn headerText="Contents of println" dataField="colPrintlnContents"/>
+			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="200"/>
+			<mx:AdvancedDataGridColumn headerText="Component/Device" dataField="Class" width="160"/>
+			<mx:AdvancedDataGridColumn headerText="Handler / Action" dataField="Handler" width="160"/>
+			<mx:AdvancedDataGridColumn headerText="Information" dataField="PrintlnContents"/>
 		</mx:columns>
-	</mx:DataGrid>
-	
-	
+	</mx:AdvancedDataGrid>
+	<mx:Button click="sidecarviz.addData();" right="15" bottom="15" label="Add Data"/>
 </mx:Application>

@@ -36,6 +36,7 @@ public class SideCarVisualizations {
 
 	private SideCarClient sideCarClient;
 	private SideCarServer sideCarServer;
+	private ToolkitListener toolkitListener;
 
 	/**
 	 * The Firefox Server can start before this.<br>
@@ -47,8 +48,7 @@ public class SideCarVisualizations {
 		DebugUtils.println("Initializing SideCar...");
 
 		// start a server here... (43210)
-		sideCarServer = new SideCarServer();
-
+		sideCarServer = new SideCarServer(this);
 
 		// The green button opens firefox (which starts its own server at 54321)
 
@@ -75,5 +75,13 @@ public class SideCarVisualizations {
 		if (sideCarClient != null) {
 			sideCarClient.exit();
 		}
+	}
+
+	public void connectToTheToolkit() {
+		toolkitListener = new ToolkitListener(this);
+	}
+
+	public void sendToFlashGUI(String message) {
+		sideCarServer.sendToFlashGUI(message);
 	}
 }
