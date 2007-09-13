@@ -42,7 +42,6 @@
 				paperUITree.dataProvider = treeDataCollection;
 				addSheetItem("Bob");
 				addRegionItem("Regioo", "Bob");
-				
 			}
 
 			public function timerExpandHandler(e:TimerEvent):void {
@@ -78,19 +77,60 @@
 				//
 				
 			}
+			
+			
+			//
+			public function setPenActive(indx:int):void {
+				switch(indx) {
+					case 1:
+						pen1.source = Images.PenActive;
+						break;
+					case 2:
+						pen2.source = Images.PenActive;
+						break;
+					case 3:
+						pen3.source = Images.PenActive;
+						break;
+					case 4:
+						pen4.source = Images.PenActive;
+						break;
+					default:
+					break;					
+				}
+			}
+			public function setPenNotActive(indx:int):void {
+				switch(indx) {
+					case 1:
+						pen1.source = Images.PenInactive;
+						break;
+					case 2:
+						pen2.source = Images.PenInactive;
+						break;
+					case 3:
+						pen3.source = Images.PenInactive;
+						break;
+					case 4:
+						pen4.source = Images.PenInactive;
+						break;
+					default:
+					break;					
+				}
+			}
+			
+			public function setCurrentActivePen(indx:int):void {
+				currentPen.text = "Pen " + indx;
+			}
 		]]>
 	</mx:Script>
 
 		
 	<mx:VBox top="10" left="10" width="100%" height="100%" right="10">
-		
-
 		<!-- Image of one or more Pens, with a panel to show pen data as it comes in... //-->
 		<mx:HBox top="0" left="0" right="0" width="100%" verticalAlign="top">
 			<mx:VBox horizontalAlign="right" verticalAlign="top" verticalGap="0">
-				<mx:Label text="Pen 1" styleName="detailsText"/>
+				<mx:Label id="currentPen" text="None Active" styleName="detailsText"/>
 				<mx:HBox horizontalGap="0" >
-					<mx:Image id="pen1" source="{Images.PenActive}" click="Alert.show('Pen 1 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen1" source="{Images.PenInactive}" click="Alert.show('Pen 1 Clicked');" buttonMode="true"/>
 					<mx:Image id="pen2" source="{Images.PenInactive}" click="Alert.show('Pen 2 Clicked');" buttonMode="true"/>
 					<mx:Image id="pen3" source="{Images.PenInactive}" click="Alert.show('Pen 3 Clicked');" buttonMode="true"/>
 					<mx:Image id="pen4" source="{Images.PenInactive}" click="Alert.show('Pen 4 Clicked');" buttonMode="true"/>
