@@ -30,13 +30,13 @@ package tools {
 		}
 
 		
-		public function addData():void {
-			for (var i:int=0; i<10; i++) {
-				printlnData.addItem({Time:"Hello", Class:"bob", Handler:"Yah", PrintlnContents:"Yo"+itemNumber++});
-				lastItem = {Time:"Another", Class:"bob", Handler:"Yuck", PrintlnContents:"Yo"+itemNumber++};
-				printlnData.addItem(lastItem);
-			}
-			
+		public function addData(time:String, where:String, event:String, info:String):void {
+			// convert time into a readable string...
+			var date:Date = new Date();
+			date.time = parseInt(time);
+			trace(date + " " + where + " " + event + " " + info);
+			lastItem = {Time:date, Class:where, Handler:event, PrintlnContents:info};
+			printlnData.addItem(lastItem);
 			// set a timer to scroll to the bottom after a second
 			scrollTimer.start();
 		}
@@ -77,10 +77,14 @@ package tools {
         private function msgListener(event:DataEvent):void {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
-            trace(msg.toXMLString());
+            //trace(msg.toXMLString());
             switch(msgName) {
+            	case "eventHandler":
+            	
+            		addData(msg.@time, msg.@component, msg.@handlerName, "");
+	            	break;
             	default:
-            	break;
+    	        	break;
             }
         }
 	}

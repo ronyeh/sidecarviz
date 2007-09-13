@@ -38,10 +38,8 @@ public class ToolkitListener {
 						}
 						try {
 							String inputLine = bufferedReader.readLine();
-							// DebugUtils.println(inputLine);
 							// forward it on to the flex client
 							viz.sendToFlashGUI(inputLine);
-							
 						} catch (IOException e) {
 							done = true;
 							DebugUtils.println("It's likely that PaperToolkit has exited...");
