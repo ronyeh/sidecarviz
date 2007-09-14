@@ -16,121 +16,20 @@
 			import tools.Images;
 			import components.State;
 
-			
-			private var playTimer:Timer = new Timer(500);
-
 			[Bindable]
 			private var halfWindowHeight:int = 200;
 
-			private const defaultSearchText:String = "type here";
-			private var isPlaying:Boolean = false;
-			private var sidecarviz:SideCarBackend;
+			[Bindable]
+			private var sc:SideCarBackend;
 			
 			public function init():void {
-				sidecarviz = new SideCarBackend(this);
+				sc = new SideCarBackend(this);
 				
 				shelfContainer.visible = true;
 				halfWindowHeight = height/2;
 				shelf.itemRenderer = new ClassFactory(State);
-				playTimer.addEventListener(TimerEvent.TIMER, playTimerHandler);
 			}
 			
-			private function addState():void {
-				shelf.numItems = shelf.numItems+1;
-				shelf.selectedIndex = shelf.numItems-1;
-			}
-			
-			
-			private function rewind():void {
-				shelf.selectedIndex = 0;
-			}
-			
-
-			private function playTimerHandler(e:TimerEvent):void {
-				shelf.selectedIndex = Math.min(shelf.selectedIndex + 1, shelf.numItems-1);
-				if (shelf.selectedIndex == shelf.numItems-1) {
-					playTimer.stop();
-				}
-			}
-			
-			private function playOrStop():void {
-				if (isPlaying) {
-					playTimer.stop();
-					playTimer.reset();
-					playStopButton.label = "Play";
-				} else {
-					playTimer.reset();
-					playTimer.start();
-					playStopButton.label = "Stop";
-				}
-				isPlaying = !isPlaying;
-			}
-			
-			private function fastForward():void {
-				shelf.selectedIndex = shelf.numItems-1;
-			}
-			
-			public function itemClickHandler(event:MenuEvent):void {
-				Alert.show("Menu Label: " + event.label + " Item #" + event.index);
-			}
-
-			public function toggleDetailsVisibility():void {
-				if (systemDetails.alpha > 0) {
-					fOutDetails.play();
-				} else {
-					fInDetails.play();
-				}
-			}
-			
-			public function toggleInteractionHistoryVisibility():void {
-				if (interactionHistory.alpha > 0) {
-					fOutHistory.play();
-				} else {
-					fInHistory.play();
-				}
-			}
-
-			public function endFadeOutDetails():void {
-				systemDetails.visible = false;
-				detailsButton.label = "Show System Details";
-			}
-			public function startFadeInDetails():void {
-				systemDetails.visible = true;
-				detailsButton.label = "Hide";
-			}
-
-			
-			public function endFadeOut():void {
-				interactionHistory.visible = false;
-				historyButton.label = "Show Interaction History";
-			}
-			public function startFadeIn():void {
-				interactionHistory.visible = true;
-				historyButton.label = "Hide";
-			}
-			
-			public function searchBoxFocusOut():void {
-				if (searchBox.text == "") {
-					searchBox.text = defaultSearchText;
-					searchBox.setStyle("color", "0xAAAAAA");
-				}
-			}
-			
-			public function searchBoxClicked():void {
-				if (searchBox.text == defaultSearchText) {
-					searchBox.text = "";
-					searchBox.setStyle("color", "0x222222");
-				}
-			}
-			public function searchBoxClearClicked():void {
-				searchBox.text = defaultSearchText;
-				searchBox.setStyle("color", "0xAAAAAA");
-			}
-			public function searchBoxSubmitted():void {
-				if (searchBox.text != defaultSearchText) {
-					trace("Searching for: " + searchBox.text);
-				}
-			}
 		]]>
 	</mx:Script>
 
@@ -139,11 +38,11 @@
 		<node label="Exit"/>		
 	</mx:XMLList>
 
-	<mx:Fade id="fOutDetails" alphaTo="0" target="{systemDetails}" effectEnd="endFadeOutDetails()"/>
-	<mx:Fade id="fInDetails" alphaTo="0.75" target="{systemDetails}" effectStart="startFadeInDetails()"/>
+	<mx:Fade id="fOutDetails" alphaTo="0" target="{systemDetails}" effectEnd="sc.endFadeOutDetails()"/>
+	<mx:Fade id="fInDetails" alphaTo="0.75" target="{systemDetails}" effectStart="sc.startFadeInDetails()"/>
 
-	<mx:Fade id="fOutHistory" alphaTo="0" target="{interactionHistory}" effectEnd="endFadeOut()"/>
-	<mx:Fade id="fInHistory" alphaTo="0.7" target="{interactionHistory}" effectStart="startFadeIn()"/>
+	<mx:Fade id="fOutHistory" alphaTo="0" target="{interactionHistory}" effectEnd="sc.endFadeOut()"/>
+	<mx:Fade id="fInHistory" alphaTo="0.7" target="{interactionHistory}" effectStart="sc.startFadeIn()"/>
 
 	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
 
@@ -152,13 +51,13 @@
 			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" numItems="1" gap="{halfWindowHeight/2.3}"/>
 		<mx:HBox left="10" right="10" width="100%">
 			<mx:Spacer width="5"/>
-			<mx:Button label="Rewind" styleName="button" click="rewind();"/>
-			<mx:Button id="playStopButton" label="Play" styleName="button" click="playOrStop();"/>
-			<mx:Button label="Fast Forward" styleName="button" click="fastForward();"/>
+			<mx:Button label="Rewind" styleName="button" click="sc.rewind();"/>
+			<mx:Button id="playStopButton" label="Play" styleName="button" click="sc.playOrStop();"/>
+			<mx:Button label="Fast Forward" styleName="button" click="sc.fastForward();"/>
 			<mx:Label text="Timeline:" fontSize="15"/>
 			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="100%" 
 				showDataTip="false" focusEnabled="false"/>
-			<mx:Button label="Add State" styleName="button" click="addState()"/>
+			<mx:Button label="Add State" styleName="button" click="sc.addState()"/>
 			<mx:Spacer width="5"/>
 		</mx:HBox>
 	</mx:VBox>
@@ -168,7 +67,7 @@
 	<mx:ApplicationControlBar right="10" top="10" dock="false">
 		<mx:Label text="Search:"/>
 		<mx:Canvas width="100%" maxWidth="200">
-			<mx:Button label="×" right="-8" verticalCenter="0" fontSize="14" click="searchBoxClearClicked()" focusEnabled="false">
+			<mx:Button label="×" right="-8" verticalCenter="0" fontSize="14" click="sc.searchBoxClearClicked()" focusEnabled="false">
 				<mx:upSkin>
 					@Embed('images/spacer.gif')
 				</mx:upSkin>
@@ -179,20 +78,20 @@
 					@Embed('images/spacer.gif')
 				</mx:downSkin>
 			</mx:Button>
-			<mx:TextInput id="searchBox" text="{defaultSearchText}" verticalCenter="-1" right="0" click="searchBoxClicked();" 
-				enter="searchBoxSubmitted()" color="0xAAAAAA" focusOut="searchBoxFocusOut()" focusIn="searchBoxClicked()"/>
+			<mx:TextInput id="searchBox" text="{sc.DEFAULT_SEARCH_TEXT}" verticalCenter="-1" right="0" click="sc.searchBoxClicked();" 
+				enter="sc.searchBoxSubmitted()" color="0xAAAAAA" focusOut="sc.searchBoxFocusOut()" focusIn="sc.searchBoxClicked()"/>
 		</mx:Canvas>
-		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="itemClickHandler(event);" dataProvider="{menuItems}" styleName="button"/>
+		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="sc.itemClickHandler(event);" dataProvider="{menuItems}" styleName="button"/>
 	</mx:ApplicationControlBar>
 
 	<mx:Canvas top="50" right="0" height="44%">
 		<components:InteractionHistory id="interactionHistory" width="100%" height="100%"/>
-		<mx:Button id="historyButton" label="Hide" click="toggleInteractionHistoryVisibility()" right="8" top="2" styleName="smallButton" height="18"/>
+		<mx:Button id="historyButton" label="Hide" click="sc.toggleInteractionHistoryVisibility()" right="8" top="2" styleName="smallButton" height="18"/>
 	</mx:Canvas>
 
 	<mx:Canvas top="50" left="-1" height="44%">
 		<components:SystemInternals id="systemDetails" width="100%" height="100%"/>
-		<mx:Button id="detailsButton" label="Hide" click="toggleDetailsVisibility()" left="8" top="2" styleName="smallButton" height="18"/>
+		<mx:Button id="detailsButton" label="Hide" click="sc.toggleDetailsVisibility()" left="8" top="2" styleName="smallButton" height="18"/>
 	</mx:Canvas>
 
 	<!-- The Println Data Goes Here... //-->
@@ -204,4 +103,6 @@
 			<mx:AdvancedDataGridColumn headerText="Information" dataField="PrintlnContents"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
+	
+	<mx:Canvas backgroundAlpha="0.4" backgroundColor="0x335599" bottom="10" left="10" right="10" id="statusBar" height="30"/>
 </mx:Application>
