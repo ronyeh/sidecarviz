@@ -30,4 +30,48 @@
          </action>
       </actionSet>
    </extension>
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="SideCar Java Editor"
+            extensions="java"
+            icon="icons/planet.png"
+            contributorClass="sidecarviz.editors.ActionBarContributor"
+            class="sidecarviz.editors.SideCarJavaEditor"
+            id="sidecarviz.editors.SideCarJavaEditor">
+      </editor>
+   </extension>
+
+
+   <extension
+         point="org.eclipse.ui.handlers">
+      <handler
+            commandId="sidecarviz.handlers.CopyHandlerCommand"
+            class="sidecarviz.handlers.CopyHandler">
+      </handler>
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.commands">
+      <category
+            name="SideCarCommandCategory"
+            id="sidecarviz.commands.category">
+      </category>
+      <command
+            name="SideCarCommand"
+            categoryId="sidecarviz.commands.category"
+            id="sidecarviz.handlers.CopyHandlerCommand">
+      </command>
+   </extension>
+   <extension
+         point="org.eclipse.ui.bindings">
+      <key
+            commandId="sidecarviz.handlers.CopyHandlerCommand"
+            contextId="org.eclipse.ui.contexts.window"
+            sequence="M1+6"
+            schemeId="org.eclipse.ui.defaultAcceleratorConfiguration">
+      </key>
+   </extension>
+
+
 </plugin>

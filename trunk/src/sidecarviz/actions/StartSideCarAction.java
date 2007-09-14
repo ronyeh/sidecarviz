@@ -19,6 +19,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
@@ -46,6 +47,10 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 
 	public void init(IWorkbenchWindow window) {
 		// DebugUtils.println("Init: " + window);
+		
+		
+		IAction copyAction = new RetargetAction("copy", "Copy Me");
+		
 		
 	}
 

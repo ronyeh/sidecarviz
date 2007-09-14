@@ -44,7 +44,7 @@ public class SideCarClient {
 					e.printStackTrace();
 					return;
 				} catch (IOException e) {
-					e.printStackTrace();
+					DebugUtils.println("Client Socket is closed.");
 					return;
 				}
 			}
@@ -52,7 +52,6 @@ public class SideCarClient {
 		socketThread.start();
 	}
 
-	
 	/**
 	 * Disconnect from the server.
 	 */
