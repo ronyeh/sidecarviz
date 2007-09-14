@@ -1,78 +1,64 @@
-package sidecarviz.editors;
+package sidecarviz.actions;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.ResourceBundle;
 
-import org.eclipse.core.runtime.Assert;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jdt.core.ICompilationUnit;
-import org.eclipse.jdt.core.IJavaElement;
-import org.eclipse.jdt.core.Signature;
-import org.eclipse.jdt.core.dom.ASTNode;
-import org.eclipse.jdt.core.dom.CompilationUnit;
-import org.eclipse.jdt.core.dom.IBinding;
-import org.eclipse.jdt.core.dom.ITypeBinding;
-import org.eclipse.jdt.core.dom.Name;
-import org.eclipse.jdt.core.dom.rewrite.ImportRewrite;
-import org.eclipse.jdt.internal.corext.codemanipulation.ImportReferencesCollector;
-import org.eclipse.jdt.internal.corext.codemanipulation.StubUtility;
-import org.eclipse.jdt.internal.corext.dom.Bindings;
-import org.eclipse.jdt.internal.corext.util.JavaModelUtil;
-import org.eclipse.jdt.internal.ui.JavaPlugin;
-import org.eclipse.jdt.internal.ui.javaeditor.ASTProvider;
 import org.eclipse.jdt.internal.ui.javaeditor.ClipboardOperationAction;
-import org.eclipse.jdt.ui.PreferenceConstants;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuCreator;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.text.IRewriteTarget;
-import org.eclipse.jface.text.ITextOperationTarget;
-import org.eclipse.jface.text.ITextSelection;
-import org.eclipse.jface.text.Region;
 import org.eclipse.jface.util.IPropertyChangeListener;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.swt.SWTError;
-import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.dnd.ByteArrayTransfer;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.RTFTransfer;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.HelpListener;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Shell;
-import org.eclipse.ui.IWorkbenchPartSite;
-import org.eclipse.ui.texteditor.IAbstractTextEditorHelpContextIds;
-import org.eclipse.ui.texteditor.ITextEditor;
-import org.eclipse.ui.texteditor.IWorkbenchActionDefinitionIds;
-import org.eclipse.ui.texteditor.TextEditorAction;
 
 import papertoolkit.util.DebugUtils;
+import sidecarviz.handlers.CopyHandler;
 
-public class MyCopyAction implements IAction {
+public class SideCarCopyAction implements IAction {
+
+	private static IAction instance;
+
+	// do not use getinstance, since we need a new one each time!!! :(
+	public static IAction getInstance(IAction action) {
+		DebugUtils.println("Copy getInstance Called");
+		if (instance == null) {
+			instance = new SideCarCopyAction((ClipboardOperationAction) action);
+			CopyHandler.setCopyAction(instance);
+		}
+		return instance;
+	}
 
 	private ClipboardOperationAction clip;
 
-	public MyCopyAction(ClipboardOperationAction c) {
+	private SideCarCopyAction(ClipboardOperationAction c) {
 		clip = c;
 	}
 
+	/**
+	 * 
+	 */
+	private void actionPerformed() {
+		java.awt.datatransfer.Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		Transferable contents = systemClipboard.getContents(null);
+		try {
+			String transferData = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			DebugUtils.println("Copied: ");
+			System.out.println(transferData);
+		} catch (UnsupportedFlavorException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// //////////////// Don't Worry about the Methods after Here.... They're just delegates.
+
 	public void addPropertyChangeListener(IPropertyChangeListener listener) {
-		DebugUtils.println("");
+		// DebugUtils.println(""); // this is called
+
 		clip.addPropertyChangeListener(listener);
 	}
 
@@ -142,7 +128,7 @@ public class MyCopyAction implements IAction {
 	}
 
 	public boolean isEnabled() {
-		DebugUtils.println("");
+		// DebugUtils.println(""); // This is called
 		return clip.isEnabled();
 	}
 
@@ -152,32 +138,18 @@ public class MyCopyAction implements IAction {
 	}
 
 	public void removePropertyChangeListener(IPropertyChangeListener listener) {
-		DebugUtils.println("");
+		// DebugUtils.println(""); // This is called
 		clip.removePropertyChangeListener(listener);
 	}
 
 	public void run() {
-		myCopyListener();
 		clip.run();
-	}
-
-	private void myCopyListener() {
-		DebugUtils.println("Copying!");
-		java.awt.datatransfer.Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-		Transferable contents = systemClipboard.getContents(null);
-		try {
-			String transferData = (String) contents.getTransferData(DataFlavor.stringFlavor);
-			DebugUtils.println(transferData);
-		} catch (UnsupportedFlavorException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		actionPerformed();
 	}
 
 	public void runWithEvent(Event event) {
-		myCopyListener();
 		clip.runWithEvent(event);
+		actionPerformed();
 	}
 
 	public void setAccelerator(int keycode) {

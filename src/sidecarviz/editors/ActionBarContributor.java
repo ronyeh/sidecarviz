@@ -31,17 +31,17 @@ public class ActionBarContributor extends TextEditorActionContributor {
 			textEditor = (ITextEditor) editor;
 
 		// we know this is the class!
-		IAction action = getAction(textEditor, ActionFactory.COPY.getId());
-		DebugUtils.println(action);
-		action.addPropertyChangeListener(new IPropertyChangeListener() {
-			public void propertyChange(PropertyChangeEvent event) {
-				// true when something is selected
-				final Object val = event.getNewValue();
-				if (val instanceof Boolean) {
-					final Boolean isTextSelected = (Boolean) val;
-					DebugUtils.println("Text has been " + (isTextSelected ? "selected" : "unselected"));
-				}
-			}
-		});
+		// IAction action = getAction(textEditor, ActionFactory.COPY.getId());
+		// DebugUtils.println(action);
+		// action.addPropertyChangeListener(new IPropertyChangeListener() {
+		// public void propertyChange(PropertyChangeEvent event) {
+		// // true when something is selected
+		// final Object val = event.getNewValue();
+		// if (val instanceof Boolean) {
+		// final Boolean isTextSelected = (Boolean) val;
+		// DebugUtils.println("Text has been " + (isTextSelected ? "selected" : "unselected"));
+		// }
+		// }
+		// });
 	}
 }
