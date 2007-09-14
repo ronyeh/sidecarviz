@@ -56,6 +56,12 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 		//DebugUtils.println("Run: " + action);
 		// openFile();
 		// traverseWorkspace();
+		
+		// TODO: The green button should restart SideCar!
+		// The browser has probably connected, so we should close down all instances, and start over
+		// this is key, since eclipse probably should stay running....
+		SideCarVisualizations.getInstance().stop(); // does this work?
+		
 		SideCarVisualizations.getInstance().connectToWebBrowser();
 	}
 
