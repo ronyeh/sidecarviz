@@ -39,10 +39,14 @@ public class SideCarVisualizations {
 	private ToolkitListener toolkitListener;
 
 	/**
-	 * The Firefox Server can start before this.<br>
-	 * The Eclipse Plugin is Launched when Eclipse starts<br>
-	 * This starts before the PaperToolkit.<br>
-	 * Finally, the flex application starts.<br>
+	 * 1) Start Firefox: The Firefox Server should start before this.<br>
+	 * 2) Start SideCarViz or The Eclipse Plugin: Automatically Launched when instrumented Eclipse starts. This starts before the PaperToolkit.<br>
+	 * 3) Start your PaperToolkit App to test... it will add the sidecar option in your system tray.
+	 * 4) Finally, the flex application starts, which visualizes everything!<br>
+	 * <br>
+	 * Firefox actually supports multiple clients... <br>
+	 * But, it seems to fail, if SideCar logs off... as the outputstream to one of its clients craps out<br>
+	 * However, closing and reopening SideCar's Flash GUI is OK.
 	 */
 	private SideCarVisualizations() {
 		DebugUtils.println("Initializing SideCar...");
@@ -51,15 +55,14 @@ public class SideCarVisualizations {
 		sideCarServer = new SideCarServer(this);
 
 		// The green button opens firefox (which starts its own server at 54321)
-
 		// loads the flex application, which connects to the sidecar server at 43210
-
 		// connect as a client to firefox to receive information
-
+		connectToWebBrowser();
 	}
 
 	/**
-	 * Press the green button after Firefox is running!
+	 * Press the green button after Firefox is running! We will automatically try to connect to the web
+	 * browser on startup... but the green button works too.
 	 */
 	public void connectToWebBrowser() {
 		DebugUtils.println("Connect to Web Browser");

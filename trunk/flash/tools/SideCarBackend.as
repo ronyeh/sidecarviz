@@ -68,11 +68,25 @@ package tools {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
             //trace(msg.toXMLString());
+            var searchQuery:String = "";
             switch(msgName) {
             	case "eventHandler":
-            	
             		addData(msg.@time, msg.@component, msg.@handlerName, "");
 	            	break;
+	            case "googleSearch":
+					searchQuery = unescape(msg.@searchQuery);
+	            	trace("Google Search: " + searchQuery);
+	            	break;	
+	            case "googleCodeSearch":
+					searchQuery = unescape(msg.@searchQuery);
+	            	trace("Code Search: " + searchQuery);
+	            	break;	
+	            case "browsedTo":
+	            	trace("Browsed To: " + msg.@url);
+	            	break;	
+				case "clipboardChanged":
+					trace("Clipboard Changed on Website: " + msg.@url + " to value " + msg.@contents);
+					break;
             	default:
     	        	break;
             }
