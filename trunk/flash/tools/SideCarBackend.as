@@ -72,6 +72,7 @@ package tools {
 		}
 
 		// handle messages
+		// this is the core of SideCar, as we pass this data into the GUI...
         private function msgListener(event:DataEvent):void {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
@@ -167,9 +168,6 @@ package tools {
 			gui.shelf.selectedIndex = gui.shelf.numItems-1;
 		}
 		
-		public function itemClickHandler(event:MenuEvent):void {
-			Alert.show("Menu Label: " + event.label + " Item #" + event.index);
-		}
 
 		public function toggleDetailsVisibility():void {
 			if (gui.systemDetails.alpha > 0) {
