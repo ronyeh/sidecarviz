@@ -1,5 +1,6 @@
 package sidecarviz.editors;
 
+import org.eclipse.jdt.internal.ui.javaeditor.ClipboardOperationAction;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.ui.actions.ActionFactory;
@@ -23,7 +24,7 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		final IAction storedAction = super.getAction(actionID);
 		if (actionID.equals(ActionFactory.COPY.getId())) {
 			DebugUtils.println("Returning MyCopyAction");
-			return SideCarCopyAction.getInstance(storedAction);
+			return new SideCarCopyAction((ClipboardOperationAction)storedAction);
 		} else if (actionID.equals(ActionFactory.CUT.getId())) {
 			return SideCarCutAction.getInstance(storedAction);
 		} else if (actionID.equals(ActionFactory.PASTE.getId())) {

@@ -19,22 +19,12 @@ import sidecarviz.handlers.CopyHandler;
 
 public class SideCarCopyAction implements IAction {
 
-	private static IAction instance;
-
-	// do not use getinstance, since we need a new one each time!!! :(
-	public static IAction getInstance(IAction action) {
-		DebugUtils.println("Copy getInstance Called");
-		if (instance == null) {
-			instance = new SideCarCopyAction((ClipboardOperationAction) action);
-			CopyHandler.setCopyAction(instance);
-		}
-		return instance;
-	}
-
 	private ClipboardOperationAction clip;
 
-	private SideCarCopyAction(ClipboardOperationAction c) {
+	public SideCarCopyAction(ClipboardOperationAction c) {
+		DebugUtils.println("Created a Copy Action");
 		clip = c;
+		CopyHandler.setCopyAction(this);
 	}
 
 	/**
