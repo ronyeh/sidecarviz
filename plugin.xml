@@ -22,7 +22,7 @@
             id="sidecarviz.actions.StartSideCarActionSet">
          <action
                label="&amp;Start SideCar"
-               icon="icons/sun.gif"
+               icon="icons/planet.png"
                class="sidecarviz.actions.StartSideCarAction"
                tooltip="SideCar Action"
                toolbarPath="startupGroup"
@@ -35,7 +35,7 @@
       <editor
             name="SideCar Java Editor"
             extensions="java"
-            icon="icons/planet.png"
+            icon="icons/sun.gif"
             contributorClass="sidecarviz.editors.ActionBarContributor"
             class="sidecarviz.editors.SideCarJavaEditor"
             id="sidecarviz.editors.SideCarJavaEditor">

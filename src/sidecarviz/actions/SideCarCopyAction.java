@@ -53,22 +53,22 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	public int getAccelerator() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getAccelerator();
 	}
 
 	public String getActionDefinitionId() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getActionDefinitionId();
 	}
 
 	public String getDescription() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getDescription();
 	}
 
 	public ImageDescriptor getDisabledImageDescriptor() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getDisabledImageDescriptor();
 	}
 
@@ -78,32 +78,32 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	public ImageDescriptor getHoverImageDescriptor() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getHoverImageDescriptor();
 	}
 
 	public String getId() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getId();
 	}
 
 	public ImageDescriptor getImageDescriptor() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getImageDescriptor();
 	}
 
 	public IMenuCreator getMenuCreator() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getMenuCreator();
 	}
 
 	public int getStyle() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getStyle();
 	}
 
 	public String getText() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.getText();
 	}
 
@@ -113,7 +113,7 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	public boolean isChecked() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.isChecked();
 	}
 
@@ -123,7 +123,7 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	public boolean isHandled() {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		return clip.isHandled();
 	}
 
@@ -143,67 +143,67 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	public void setAccelerator(int keycode) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setAccelerator(keycode);
 	}
 
 	public void setActionDefinitionId(String id) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setActionDefinitionId(id);
 	}
 
 	public void setChecked(boolean checked) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setChecked(checked);
 	}
 
 	public void setDescription(String text) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setDescription(text);
 	}
 
 	public void setDisabledImageDescriptor(ImageDescriptor newImage) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setDisabledImageDescriptor(newImage);
 	}
 
 	public void setEnabled(boolean enabled) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setEnabled(enabled);
 	}
 
 	public void setHelpListener(HelpListener listener) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setHelpListener(listener);
 	}
 
 	public void setHoverImageDescriptor(ImageDescriptor newImage) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setHoverImageDescriptor(newImage);
 	}
 
 	public void setId(String id) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setId(id);
 	}
 
 	public void setImageDescriptor(ImageDescriptor newImage) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setImageDescriptor(newImage);
 	}
 
 	public void setMenuCreator(IMenuCreator creator) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setMenuCreator(creator);
 	}
 
 	public void setText(String text) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setText(text);
 	}
 
 	public void setToolTipText(String text) {
-		DebugUtils.println("");
+		// DebugUtils.println("");
 		clip.setToolTipText(text);
 	}
 }

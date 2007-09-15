@@ -3,6 +3,7 @@ package sidecarviz.editors;
 import java.io.File;
 
 import org.eclipse.jdt.core.IJavaElement;
+import org.eclipse.jdt.core.ISourceReference;
 import org.eclipse.jdt.internal.ui.javaeditor.ClipboardOperationAction;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
@@ -68,6 +69,12 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		super.selectionChanged();
 	}
 
+	/**
+	 * This tracks what item was selected in the package explorer. It can be a compilation unit (*.java file)
+	 * or something finer grained, like a method or class.
+	 * 
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#setSelection(org.eclipse.jdt.core.IJavaElement)
+	 */
 	public void setSelection(IJavaElement element) {
 		super.setSelection(element);
 		DebugUtils.println("Selected: " + element.getElementName());
@@ -103,16 +110,38 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 	public void updatePartControl(IEditorInput input) {
 		super.updatePartControl(input);
 		if (input instanceof FileEditorInput) {
-			SideCarVisualizations.getInstance().changedEditorTo(((FileEditorInput)input).getPath().toFile().getAbsoluteFile());
+			SideCarVisualizations.getInstance().changedEditorTo(
+					((FileEditorInput) input).getPath().toFile().getAbsoluteFile());
 		}
-	}
-
-	public INavigationLocation createNavigationLocation() {
-		return super.createNavigationLocation();
 	}
 
 	protected void setDocumentProvider(IDocumentProvider provider) {
 		super.setDocumentProvider(provider);
-		DebugUtils.println(provider);
+		DebugUtils.println("Document Provider Set to: " + provider);
+	}
+
+	/**
+	 * Fired when the cursor moves...
+	 * The string is of the form LineNum : CharNum, where each starts from 1 (not 0)...
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#handleCursorPositionChanged()
+	 */
+	protected void handleCursorPositionChanged() {
+		super.handleCursorPositionChanged();
+		//DebugUtils.println("Cursor Changed: " + getCursorPosition());
+		// This can be used to review/replay the interaction somehow??
+	}
+
+	/**
+	 * This is fired when the person selects a method...or class.
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#setSelection(org.eclipse.jdt.core.ISourceReference, boolean)
+	 */
+	protected void setSelection(ISourceReference reference, boolean moveCursor) {
+		super.setSelection(reference, moveCursor);
+		DebugUtils.println("SetSelection to: " + reference);
+	}
+
+	public void setFocus() {
+		super.setFocus();
+		DebugUtils.println("Focus");
 	}
 }
