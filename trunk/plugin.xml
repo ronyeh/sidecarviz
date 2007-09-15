@@ -22,7 +22,7 @@
             id="sidecarviz.actions.StartSideCarActionSet">
          <action
                label="&amp;Start SideCar"
-               icon="icons/planet.png"
+               icon="icons/sun.gif"
                class="sidecarviz.actions.StartSideCarAction"
                tooltip="SideCar Action"
                toolbarPath="startupGroup"
