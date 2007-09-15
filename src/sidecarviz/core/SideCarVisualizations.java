@@ -1,5 +1,7 @@
 package sidecarviz.core;
 
+import java.io.File;
+
 import papertoolkit.util.DebugUtils;
 
 /**
@@ -86,5 +88,9 @@ public class SideCarVisualizations {
 
 	public void sendToFlashGUI(String message) {
 		sideCarServer.sendToFlashGUI(message);
+	}
+
+	public void changedEditorTo(File javaFile) {
+		DebugUtils.println("Worked on File: " + javaFile.getAbsoluteFile());
 	}
 }
