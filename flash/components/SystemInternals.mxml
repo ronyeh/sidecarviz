@@ -10,7 +10,8 @@
 			import tools.Images;
 			
 			[Bindable]
-			private var treeDataCollection:XMLListCollection;
+			private var paperUITreeData:XMLListCollection;
+
 			private var timerExpandTree:Timer;
 			private var selectedNode:XML;
 			
@@ -22,18 +23,13 @@
 			// when we find the region, we can add a handler as a child of that region item
 			private var regions:Dictionary = new Dictionary();
 			
+			private var penArray:Object = {1:pen1, 2:pen2, 3:pen3, 4:pen4};
+			
 			public function init():void {
-				timerExpandTree = new Timer(500);
+				timerExpandTree = new Timer(400);
 				timerExpandTree.addEventListener(TimerEvent.TIMER, timerExpandHandler);
-				treeDataCollection = new XMLListCollection();
-				paperUITree.dataProvider = treeDataCollection;
-
-				addSheetItem("Bob");
-				addSheetItem("Yungin");
-				addRegionItem("Regioo", "Bob");
-				addHandlerItem("My Handler", "Regioo", "Bob");
-				addRegionItem("Reggg", "Yungin");
-				addRegionItem("Fuck", "Yungin");
+				paperUITreeData = new XMLListCollection();
+				paperUITree.dataProvider = paperUITreeData;
 			}
 
 			public function addSheetItem(sheetName:String):void {
@@ -43,7 +39,7 @@
 				}
 				var item:XML = <sheet label={sheetName} nodeType="Sheet"/>;
 				sheets[sheetName] = item;
-				treeDataCollection.addItem(item);
+				paperUITreeData.addItem(item);
 				timerExpandTree.start();
 			}
 			
@@ -78,66 +74,42 @@
 				}
 			}
 
+			// expands the tree in half a second
 			public function timerExpandHandler(e:TimerEvent):void {
 				timerExpandTree.stop();
-				for (var i:int=0; i<treeDataCollection.length; i++) {
-					var obj:Object = treeDataCollection.getItemAt(i);
+				for (var i:int=0; i<paperUITreeData.length; i++) {
+					var obj:Object = paperUITreeData.getItemAt(i);
 					// trace("expanding item: " + i + " " + obj);
 					paperUITree.expandChildrenOf(obj, true);
 				}
 			}
 			
-			public function treeChanged(event:Event):void {
-				selectedNode = (event.target as Tree).selectedItem as XML;
-				trace(selectedNode.@label);
-			}
 			
 			
 			
-			//
+			// this is now zero indexed... so it works!
 			public function setPenActive(indx:int):void {
-				switch(indx) {
-					case 1:
-						pen1.source = Images.PenActive;
-						break;
-					case 2:
-						pen2.source = Images.PenActive;
-						break;
-					case 3:
-						pen3.source = Images.PenActive;
-						break;
-					case 4:
-						pen4.source = Images.PenActive;
-						break;
-					default:
-					break;					
-				}
+				penArray[indx].source = Images.PenActive;
+				setCurrentActivePen(indx);
 			}
 			public function setPenNotActive(indx:int):void {
-				switch(indx) {
-					case 1:
-						pen1.source = Images.PenInactive;
-						break;
-					case 2:
-						pen2.source = Images.PenInactive;
-						break;
-					case 3:
-						pen3.source = Images.PenInactive;
-						break;
-					case 4:
-						pen4.source = Images.PenInactive;
-						break;
-					default:
-					break;					
-				}
+				penArray[indx].source = Images.PenInactive;
 			}
-			
-			public function setCurrentActivePen(indx:int):void {
+			private function setCurrentActivePen(indx:int):void {
 				currentPen.text = "Pen " + indx;
+			}
+
+			private function treeChanged(event:Event):void {
+				selectedNode = (event.target as Tree).selectedItem as XML;
+				trace("Tree Changed: " + selectedNode.@label);
+			}
+			private function treeItemSelected():void {
+				trace("Selected Tree Items: " + paperUITree.selectedIndices);
 			}
 			
 			public function goToLastEditLocation():void {
-				
+				// isn't the last edit location usually open in eclipse?
+				// this doesn't seem to matter, then...
 			}
 		]]>
 	</mx:Script>
@@ -149,10 +121,10 @@
 			<mx:VBox horizontalAlign="right" verticalAlign="top" verticalGap="0">
 				<mx:Label id="currentPen" text="None Active" styleName="detailsText"/>
 				<mx:HBox horizontalGap="0" >
-					<mx:Image id="pen1" source="{Images.PenInactive}" click="Alert.show('Pen 1 Clicked');" buttonMode="true"/>
-					<mx:Image id="pen2" source="{Images.PenInactive}" click="Alert.show('Pen 2 Clicked');" buttonMode="true"/>
-					<mx:Image id="pen3" source="{Images.PenInactive}" click="Alert.show('Pen 3 Clicked');" buttonMode="true"/>
-					<mx:Image id="pen4" source="{Images.PenInactive}" click="Alert.show('Pen 4 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen1" source="{Images.PenInactive}" click="trace('Pen 1 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen2" source="{Images.PenInactive}" click="trace('Pen 2 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen3" source="{Images.PenInactive}" click="trace('Pen 3 Clicked');" buttonMode="true"/>
+					<mx:Image id="pen4" source="{Images.PenInactive}" click="trace('Pen 4 Clicked');" buttonMode="true"/>
 				</mx:HBox>
 			</mx:VBox>
 			<mx:VBox width="100%" height="100%" horizontalAlign="left" verticalGap="0">
@@ -169,7 +141,7 @@
 		<mx:Tree id="paperUITree" top="95" left="10" right="10" width="100%" height="100%" 
 			labelField="@label" styleName="tree" defaultLeafIcon="{Images.Handler}" 
 			iconFunction="iconFunction" change="treeChanged(event);" 
-			dataProvider=""/>
+			dataProvider="" click="treeItemSelected()"/>
 		<mx:HBox horizontalGap="0" verticalAlign="middle" width="100%">
 			<mx:Label styleName="detailsText" text="Last Edit:"/>
 			<mx:VBox>
