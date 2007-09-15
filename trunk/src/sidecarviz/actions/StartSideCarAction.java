@@ -50,21 +50,19 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	/**
-	 * The green Saturn button is pressed.
+	 * The green Saturn button is pressed. This button should load the Flex GUI for Sidecar... during development.
 	 */
 	public void run(IAction action) {
-		// DebugUtils.println("Run: " + action);
-		// openFile();
-		// traverseWorkspace();
-
-		// TODO: The green button should restart SideCar!
-		// The browser has probably connected, so we should close down all instances, and start over
+		
+		// Now that the browser is open... we should close down our monitoring, and start over
 		// this is key, since eclipse probably should stay running....
-		SideCarVisualizations.getInstance().stop(); // does this work?
-
-		SideCarVisualizations.getInstance().connectToWebBrowser();
+		SideCarVisualizations.getInstance().stop();
+		SideCarVisualizations.getInstance();
 	}
 
+	/**
+	 * 
+	 */
 	private void traverseWorkspace() {
 		IWorkspace workspace = ResourcesPlugin.getWorkspace();
 		IJavaModel javaModel = JavaCore.create(workspace.getRoot());
@@ -104,6 +102,9 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 		}
 	}
 
+	/**
+	 * Will be useful for opening a file to a particular line...
+	 */
 	private void openFile() {
 
 		// get the filepath using a PaperToolkit method... then convert it to an Eclipse Filestore

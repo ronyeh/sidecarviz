@@ -5,21 +5,29 @@
 			import mx.collections.ArrayCollection;
 
 			private var interactionData:ArrayCollection = new ArrayCollection();
+			private var scrollTimer:Timer;
+			private var lastItem:Object;
 
 			public function init():void {
 				interactionHistory.dataProvider = interactionData;
-				
-				// add some fake data
-				addData("Clipboard", "Hellooo!");
+
+				scrollTimer = new Timer(200);
+				scrollTimer.addEventListener(TimerEvent.TIMER, makeLastItemVisible);
 			}
+	
+			public function makeLastItemVisible(e:TimerEvent=null):void {
+				scrollTimer.stop();
+				interactionHistory.firstVisibleItem = lastItem;
+			}
+	
 			
 			public function addData(interaction:String, details:String=""):void {
 				var currTime:Date = new Date();
-				
-				
 				var timeString:String = currTime.toTimeString();
 				var item:Object = {Time:timeString, Interaction:interaction, Details:details};
+				lastItem = item;
 				interactionData.addItem(item);
+				scrollTimer.start();
 			}
 			
 			public function doubleClicked(event:MouseEvent):void {
