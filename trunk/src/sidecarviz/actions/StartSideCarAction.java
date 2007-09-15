@@ -47,26 +47,21 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 
 	public void init(IWorkbenchWindow window) {
 		// DebugUtils.println("Init: " + window);
-		
-		
-		IAction copyAction = new RetargetAction("copy", "Copy Me");
-		
-		
 	}
 
 	/**
 	 * The green Saturn button is pressed.
 	 */
 	public void run(IAction action) {
-		//DebugUtils.println("Run: " + action);
+		// DebugUtils.println("Run: " + action);
 		// openFile();
 		// traverseWorkspace();
-		
+
 		// TODO: The green button should restart SideCar!
 		// The browser has probably connected, so we should close down all instances, and start over
 		// this is key, since eclipse probably should stay running....
 		SideCarVisualizations.getInstance().stop(); // does this work?
-		
+
 		SideCarVisualizations.getInstance().connectToWebBrowser();
 	}
 
@@ -124,8 +119,14 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 		}
 	}
 
+	/**
+	 * This is fired every time someone selects some text...
+	 * 
+	 * @see org.eclipse.ui.IActionDelegate#selectionChanged(org.eclipse.jface.action.IAction,
+	 *      org.eclipse.jface.viewers.ISelection)
+	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		// DebugUtils.println("SelectionChanged: " + action + " / " + selection);
+		DebugUtils.println("SelectionChanged: " + action + " / " + selection);
 
 		// if (selection == null) { // never null, apparently
 		// return;
@@ -134,7 +135,7 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 		// always points to this instance...
 		// DebugUtils.println(action.getId());
 
-		// figure out where the cursor is
+		// figure out where the cursor is...
 	}
 
 }
