@@ -137,6 +137,10 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 	 */
 	protected void setSelection(ISourceReference reference, boolean moveCursor) {
 		super.setSelection(reference, moveCursor);
+		if (reference == null) {
+			// selected nothing
+			return;
+		}
 		DebugUtils.println("SetSelection to: " + reference);
 	}
 

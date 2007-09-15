@@ -62,12 +62,10 @@ public class SideCarServer {
 					String searchTerm = getSearchTerm(url);
 					sendToFlashGUI("<googleSearch searchQuery=\"" + searchTerm + "\"/>");
 					DebugUtils.println("Google Searched For: " + searchTerm);
-				} 
-				else if (url.contains("www.google.com/codesearch?")) {
+				} else if (url.contains("www.google.com/codesearch?")) {
 					String searchTerm = getSearchTerm(url);
 					sendToFlashGUI("<googleCodeSearch searchQuery=\"" + searchTerm + "\"/>");
-				}
-				else {
+				} else {
 					// track all page changes...
 					// Browsed To
 					DebugUtils.println("Browsed to URL: " + args[0]);
@@ -109,8 +107,12 @@ public class SideCarServer {
 		server.handleCommand(line);
 	}
 
-	private void openFlashGUI() {
-		final File sidecarHTML = new File("flash/bin/SideCar.html");
+	/**
+	 * Well, since we are running it from the Eclipse plugin... we should hard-code the path for now.
+	 */
+	public void openFlashGUI() {
+		final File sidecarHTML = new File(
+				"C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz/flash/bin/SideCar.html");
 		server.openFlashHTMLGUI(sidecarHTML);
 	}
 
@@ -123,6 +125,10 @@ public class SideCarServer {
 		server.sendMessage(message);
 	}
 
+	/**
+	 * @param url
+	 * @return
+	 */
 	private String getSearchTerm(String url) {
 		String searchTerm = "";
 		// Searched For

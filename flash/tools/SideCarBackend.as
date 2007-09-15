@@ -76,7 +76,6 @@ package tools {
         private function msgListener(event:DataEvent):void {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
-            //trace(msg.toXMLString());
             var searchQuery:String = "";
             switch(msgName) {
             	case "eventHandler":
@@ -97,7 +96,11 @@ package tools {
 					// trace("Clipboard Changed on Website: " + msg.@url + " to value " + msg.@contents);
 					addClipboardData(msg.@url, msg.@contents);
 					break;
+				case "currentlyEditing":
+					gui.interactionHistory.addData("Edit File", msg.@fileName);
+					break;
             	default:
+		            trace("Unhandled: " + msg.toXMLString());
     	        	break;
             }
         }
@@ -109,6 +112,7 @@ package tools {
 			gui.interactionHistory.addData("Clipboard Changed", url + " : " + contents);
 		}
 
+		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
 		public function addData(time:String, where:String, event:String, info:String):void {
 			// convert time into a readable string...
 			var date:Date = new Date();
