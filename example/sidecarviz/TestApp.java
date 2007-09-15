@@ -1,4 +1,4 @@
-package sidecarviz.app;
+package sidecarviz;
 
 import papertoolkit.PaperToolkit;
 import papertoolkit.application.Application;
