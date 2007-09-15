@@ -8,19 +8,20 @@
 			private var scrollTimer:Timer;
 			private var lastItem:Object;
 
+			// sets up the component
 			public function init():void {
 				interactionHistory.dataProvider = interactionData;
-
 				scrollTimer = new Timer(200);
 				scrollTimer.addEventListener(TimerEvent.TIMER, makeLastItemVisible);
 			}
 	
-			public function makeLastItemVisible(e:TimerEvent=null):void {
+			// scrolls the table all the way down in 200 ms
+ 			public function makeLastItemVisible(e:TimerEvent=null):void {
 				scrollTimer.stop();
 				interactionHistory.firstVisibleItem = lastItem;
 			}
 	
-			
+			// adds a row to the datagrid
 			public function addData(interaction:String, details:String=""):void {
 				var currTime:Date = new Date();
 				var timeString:String = currTime.toTimeString();
@@ -30,6 +31,8 @@
 				scrollTimer.start();
 			}
 			
+			// does nothing for now
+			// ideally, "replays" the item you select... i.e. copy blah, or navigate to blah...
 			public function doubleClicked(event:MouseEvent):void {
 				var item:Object = interactionHistory.selectedItem;
 				if (item == null) {

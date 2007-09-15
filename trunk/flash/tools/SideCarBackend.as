@@ -10,6 +10,7 @@ package tools {
 	import mx.events.MenuEvent;
 	import mx.controls.Alert;
 	
+	// controls the main interaction
 	public class SideCarBackend {
 		public const DEFAULT_SEARCH_TEXT:String = "type here";
 		private var portNum:int;
@@ -19,7 +20,7 @@ package tools {
 		private var lastItem:Object;
 		private var itemNumber:Number = 0;
 
-		private var playTimer:Timer = new Timer(500);
+		private var playTimer:Timer = new Timer(450);
 		private var isPlaying:Boolean = false;
 
 		// the array storing the data for the lower pane
@@ -79,22 +80,25 @@ package tools {
             var searchQuery:String = "";
             switch(msgName) {
             	case "eventHandler":
-            		addData(msg.@time, msg.@component, msg.@handlerName, "");
+            		addSystemOutputData(msg.@time, msg.@component, msg.@handlerName, "");
 	            	break;
 	            case "googleSearch":
 					searchQuery = unescape(msg.@searchQuery);
 	            	trace("Google Search: " + searchQuery);
+					gui.interactionHistory.addData("Web Search", searchQuery);
 	            	break;	
 	            case "googleCodeSearch":
 					searchQuery = unescape(msg.@searchQuery);
 	            	trace("Code Search: " + searchQuery);
+					gui.interactionHistory.addData("Code Search", searchQuery);
 	            	break;	
 	            case "browsedTo":
 	            	trace("Browsed To: " + msg.@url);
+					gui.interactionHistory.addData("Browsed To", msg.@url);
 	            	break;	
 				case "clipboardChanged":
 					// trace("Clipboard Changed on Website: " + msg.@url + " to value " + msg.@contents);
-					addClipboardData(msg.@url, msg.@contents);
+					gui.interactionHistory.addData("Update Clipboard", msg.@url + " : " + msg.@contents);
 					break;
 				case "currentlyEditing":
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
@@ -105,20 +109,13 @@ package tools {
             }
         }
 
-
-
-
-		public function addClipboardData(url:String, contents:String):void {
-			gui.interactionHistory.addData("Clipboard Changed", url + " : " + contents);
-		}
-
 		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
-		public function addData(time:String, where:String, event:String, info:String):void {
+		public function addSystemOutputData(time:String, where:String, event:String, info:String):void {
 			// convert time into a readable string...
 			var date:Date = new Date();
 			date.time = parseInt(time);
-			trace(date + " " + where + " " + event + " " + info);
-			lastItem = {Time:date, Class:where, Handler:event, PrintlnContents:info};
+			// trace(date + " " + where + " " + event + " " + info);
+			lastItem = {Time:date.toTimeString(), Class:where, Handler:event, PrintlnContents:info};
 			printlnData.addItem(lastItem);
 			// set a timer to scroll to the bottom after a second
 			scrollTimer.start();
@@ -134,9 +131,6 @@ package tools {
 			
 		}
 
-
-
-
 		// adds a state to the shelf
 		public function addState():void {
 			gui.shelf.numItems = gui.shelf.numItems+1;
@@ -149,13 +143,15 @@ package tools {
 		private function playTimerHandler(e:TimerEvent):void {
 			gui.shelf.selectedIndex = Math.min(gui.shelf.selectedIndex + 1, gui.shelf.numItems-1);
 			if (gui.shelf.selectedIndex == gui.shelf.numItems-1) {
-				playTimer.stop();
+				if (isPlaying) {
+					playOrStop();
+				}
 			}
 		}
-		
 		public function rewind():void {
 			gui.shelf.selectedIndex = 0;
 		}
+		// toggles between the two states...
 		public function playOrStop():void {
 			if (isPlaying) {
 				playTimer.stop();
@@ -170,6 +166,9 @@ package tools {
 		}
 		public function fastForward():void {
 			gui.shelf.selectedIndex = gui.shelf.numItems-1;
+		}
+		public function get currentlyPlaying():Boolean {
+			return isPlaying;
 		}
 		
 

@@ -8,6 +8,7 @@ import java.net.UnknownHostException;
 
 import papertoolkit.application.config.Constants.Ports;
 import papertoolkit.util.DebugUtils;
+import sidecarviz.SideCarVisualizations;
 
 /**
  * <p>

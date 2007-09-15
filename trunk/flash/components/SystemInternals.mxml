@@ -9,8 +9,63 @@
 			import mx.controls.Alert;
 			import tools.Images;
 			
+			[Bindable]
+			private var treeDataCollection:XMLListCollection;
+			private var timerExpandTree:Timer;
 			private var selectedNode:XML;
+			
+			// indexed by _SheetName... your sheets better have unique names!
+			// when we find the sheet, we can add a region as a child of that sheet item.
+			private var sheets:Dictionary = new Dictionary();
+			
+			// indexed by _SheetName_RegionName... your regions better have unique names within their parent sheet!
+			// when we find the region, we can add a handler as a child of that region item
+			private var regions:Dictionary = new Dictionary();
+			
+			public function init():void {
+				timerExpandTree = new Timer(500);
+				timerExpandTree.addEventListener(TimerEvent.TIMER, timerExpandHandler);
+				treeDataCollection = new XMLListCollection();
+				paperUITree.dataProvider = treeDataCollection;
 
+				addSheetItem("Bob");
+				addSheetItem("Yungin");
+				addRegionItem("Regioo", "Bob");
+				addHandlerItem("My Handler", "Regioo", "Bob");
+				addRegionItem("Reggg", "Yungin");
+				addRegionItem("Fuck", "Yungin");
+			}
+
+			public function addSheetItem(sheetName:String):void {
+				// assume you won't add two sheets with the same name!
+				if (sheets[sheetName] != null) {
+					return;
+				}
+				var item:XML = <sheet label={sheetName} nodeType="Sheet"/>;
+				sheets[sheetName] = item;
+				treeDataCollection.addItem(item);
+				timerExpandTree.start();
+			}
+			
+			// we keep a map of sheetNames to XML sheet items... we can append children faster that way
+			public function addRegionItem(regionName:String, sheetName:String):void {
+				var sheetItem:XML = sheets[sheetName];
+				if (sheetItem == null) return;
+				var regionItem:XML = <region label={regionName} nodeType="Region"/>;
+				regions[sheetName+"_"+regionName] = regionItem;
+				sheetItem.appendChild(regionItem);
+				timerExpandTree.start();
+			}
+			
+			// we keep a map of sheetName_regionName, and assume that is unique...
+			public function addHandlerItem(handlerName:String, regionName:String, sheetName:String):void {
+				var regionItem:XML = regions[sheetName+"_"+regionName];
+				if (regionItem == null) return;
+				regionItem.appendChild(<handler label={handlerName} nodeType="Handler"/>);
+				timerExpandTree.start();
+			}
+
+			// picks the right icon for the different paper UI components
 			public function iconFunction(item:Object):Class {
 				// trace("Item: [" + item + "]");
 				var xmlNode:XML = item as XML;
@@ -22,33 +77,12 @@
 					return Images.Sheet;
 				}
 			}
-			
-			[Bindable]
-			private var treeDataCollection:XMLListCollection;
-			private var timerExpandTree:Timer;
-			
-			public function init():void {
-				timerExpandTree = new Timer(1000);
-				timerExpandTree.addEventListener(TimerEvent.TIMER, timerExpandHandler);
-
-				treeDataCollection = new XMLListCollection();
-				treeDataCollection.addItem(
-					<node label="Sheet A" nodeType="Sheet">
-			            <node label="Region 1" nodeType="Region">
-			                <node label="InkHandler" nodeType="Handler"/>
-			                <node label="HandwritingRecognizer" nodeType="Handler"/>
-			            </node>
-			        </node>);
-				paperUITree.dataProvider = treeDataCollection;
-				addSheetItem("Bob");
-				addRegionItem("Regioo", "Bob");
-			}
 
 			public function timerExpandHandler(e:TimerEvent):void {
 				timerExpandTree.stop();
 				for (var i:int=0; i<treeDataCollection.length; i++) {
 					var obj:Object = treeDataCollection.getItemAt(i);
-					trace("expanding item: " + i + " " + obj);
+					// trace("expanding item: " + i + " " + obj);
 					paperUITree.expandChildrenOf(obj, true);
 				}
 			}
@@ -58,25 +92,6 @@
 				trace(selectedNode.@label);
 			}
 			
-			private var item:XML;
-			public function addSheetItem(sheetName:String):void {
-				item = <sheet label={sheetName} nodeType="Sheet"/>;
-				treeDataCollection.addItem(item);
-				timerExpandTree.start();
-			}
-			
-			// we keep a map of sheetNames to XML sheet items... we can append children faster that way
-			public function addRegionItem(regionName:String, sheetName:String):void {
-				item.appendChild(<region label={regionName} nodeType="Region"/>);
-				timerExpandTree.start();
-			}
-			
-			// we keep a map of sheetName_regionName, and assume that is unique...
-			public function addHandlerItem(handlerName:String, regionName:String, sheetName:String):void {
-				
-				//
-				
-			}
 			
 			
 			//

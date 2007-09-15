@@ -1,9 +1,12 @@
-package sidecarviz.core;
+package sidecarviz;
 
 import java.io.File;
 import java.util.HashMap;
 
 import papertoolkit.util.DebugUtils;
+import sidecarviz.core.SideCarClient;
+import sidecarviz.core.SideCarServer;
+import sidecarviz.core.ToolkitListener;
 
 /**
  * <p>
@@ -112,7 +115,7 @@ public class SideCarVisualizations {
 	}
 
 	/**
-	 * 
+	 * Listens for info from PaperToolkit.
 	 */
 	public void connectToTheToolkit() {
 		toolkitListener = new ToolkitListener(this);
