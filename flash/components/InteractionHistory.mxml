@@ -14,22 +14,29 @@
 			}
 			
 			public function addData(interaction:String, details:String=""):void {
-				var item:Object = {Time:new Date(), Interaction:interaction, Details:details};
+				var currTime:Date = new Date();
+				
+				
+				var timeString:String = currTime.toTimeString();
+				var item:Object = {Time:timeString, Interaction:interaction, Details:details};
 				interactionData.addItem(item);
 			}
 			
 			public function doubleClicked(event:MouseEvent):void {
 				var item:Object = interactionHistory.selectedItem;
-				trace("Selected: " + item.Time + " " + item.Interaction + " " + item.Details);
-				
+				if (item == null) {
+					trace("Nothing Selected");
+				} else {
+					trace("Selected: " + item.Time + " " + item.Interaction + " " + item.Details);
+				}
 			}
 		]]>
 	</mx:Script>
 	<mx:AdvancedDataGrid id="interactionHistory" color="#000000" width="100%" height="100%" focusEnabled="false" doubleClick="doubleClicked(event);" doubleClickEnabled="true">
 		<mx:columns>
-			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="200"/>
-			<mx:AdvancedDataGridColumn headerText="Interaction" dataField="Interaction" width="150"/>
-			<mx:AdvancedDataGridColumn headerText="Details" dataField="Details" width="300"/>
+			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="96"/>
+			<mx:AdvancedDataGridColumn headerText="Interaction" dataField="Interaction" width="170"/>
+			<mx:AdvancedDataGridColumn headerText="Details" dataField="Details" width="330"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
 </mx:Canvas>

@@ -33,10 +33,6 @@
 		]]>
 	</mx:Script>
 
-	<mx:XMLList id="menuItems">
-		<node label="Connect"/>		
-		<node label="Exit"/>		
-	</mx:XMLList>
 
 	<mx:Fade id="fOutDetails" alphaTo="0" target="{systemDetails}" effectEnd="sc.endFadeOutDetails()"/>
 	<mx:Fade id="fInDetails" alphaTo="0.75" target="{systemDetails}" effectStart="sc.startFadeInDetails()"/>
@@ -44,28 +40,48 @@
 	<mx:Fade id="fOutHistory" alphaTo="0" target="{interactionHistory}" effectEnd="sc.endFadeOut()"/>
 	<mx:Fade id="fInHistory" alphaTo="0.7" target="{interactionHistory}" effectStart="sc.startFadeIn()"/>
 
-	<mx:Label text="SideCar Visualizations" fontSize="30" fontFamily="Myriad Pro" left="10" top="10"/>
+	<mx:Label text="SideCar Visualizations" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
 
-	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false">
+
+	<mx:HBox width="50%" left="0" top="5">
+		<mx:Spacer width="45%" />
+		<mx:Button label="Rewind" styleName="button" click="sc.rewind();"/>
+		<mx:Button id="playStopButton" label="Play" styleName="button" click="sc.playOrStop();"/>
+		<mx:Button label="Fast Forward" styleName="button" click="sc.fastForward();"/>
+	</mx:HBox>
+
+	<mx:HBox width="50%" right="0" top="5">
+		<mx:Spacer width="25%"/>
+		<mx:Label text="Time:" fontSize="15"/>
+		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
+			maximum="{shelf.numItems-1}" snapInterval="1" width="35%" 
+			showDataTip="false" focusEnabled="false"/>
+		<mx:Button label="+" styleName="button" click="sc.addState()"/>
+		<mx:Spacer width="35%"/>		
+	</mx:HBox>
+
+	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false" horizontalAlign="center">
 		<components:DisplayShelf id="shelf" borderThickness="1" focusEnabled="false"
 			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" numItems="1" gap="{halfWindowHeight/2.3}"/>
-		<mx:HBox left="10" right="10" width="100%">
-			<mx:Spacer width="5"/>
-			<mx:Button label="Rewind" styleName="button" click="sc.rewind();"/>
-			<mx:Button id="playStopButton" label="Play" styleName="button" click="sc.playOrStop();"/>
-			<mx:Button label="Fast Forward" styleName="button" click="sc.fastForward();"/>
-			<mx:Label text="Timeline:" fontSize="15"/>
-			<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" maximum="{shelf.numItems-1}" snapInterval="1" width="100%" 
-				showDataTip="false" focusEnabled="false"/>
-			<mx:Button label="Add State" styleName="button" click="sc.addState()"/>
-			<mx:Spacer width="5"/>
-		</mx:HBox>
+		<mx:Canvas backgroundColor="0x565656" borderStyle="solid" borderColor="0x444444" backgroundAlpha="0.35" width="99.5%" cornerRadius="5">
+			<mx:HBox verticalAlign="middle" paddingLeft="5">
+				<mx:Text width="55">
+					<mx:text>
+						Status
+						Message
+					</mx:text>
+				</mx:Text>
+				<mx:VRule height="30" strokeWidth="1" strokeColor="0x585858"/>
+				<mx:Text color="0xDDDDDD" text="Hello" id="statusBar" width="100%" height="45" fontFamily="Consolas" fontSize="13" 
+					paddingLeft="5" paddingRight="5" paddingTop="3" paddingBottom="3"/>
+			</mx:HBox>
+		</mx:Canvas>
 	</mx:VBox>
 
 	
 	<!-- This control is kinda wonky, and sometimes introduces a cyan bar on the top of the SWF. Consider using something else. //-->
 	<mx:ApplicationControlBar right="10" top="10" dock="false">
-		<mx:Label text="Search:"/>
+		<mx:Label text="Search:" fontSize="13"/>
 		<mx:Canvas width="100%" maxWidth="200">
 			<mx:Button label="×" right="-8" verticalCenter="0" fontSize="14" click="sc.searchBoxClearClicked()" focusEnabled="false">
 				<mx:upSkin>
@@ -81,21 +97,20 @@
 			<mx:TextInput id="searchBox" text="{sc.DEFAULT_SEARCH_TEXT}" verticalCenter="-1" right="0" click="sc.searchBoxClicked();" 
 				enter="sc.searchBoxSubmitted()" color="0xAAAAAA" focusOut="sc.searchBoxFocusOut()" focusIn="sc.searchBoxClicked()"/>
 		</mx:Canvas>
-		<mx:PopUpMenuButton id="menuButton" labelField="@label" itemClick="sc.itemClickHandler(event);" dataProvider="{menuItems}" styleName="button"/>
 	</mx:ApplicationControlBar>
 
-	<mx:Canvas top="50" right="0" height="44%">
+	<mx:Canvas top="50" right="0" height="46%">
 		<components:InteractionHistory id="interactionHistory" width="100%" height="100%"/>
 		<mx:Button id="historyButton" label="Hide" click="sc.toggleInteractionHistoryVisibility()" right="8" top="2" styleName="smallButton" height="18"/>
 	</mx:Canvas>
 
-	<mx:Canvas top="50" left="-1" height="44%">
+	<mx:Canvas top="50" left="-1" height="46%">
 		<components:SystemInternals id="systemDetails" width="100%" height="100%"/>
 		<mx:Button id="detailsButton" label="Hide" click="sc.toggleDetailsVisibility()" left="8" top="2" styleName="smallButton" height="18"/>
 	</mx:Canvas>
 
 	<!-- The Println Data Goes Here... //-->
-	<mx:AdvancedDataGrid id="printlnGrid" color="#000000" height="42%" bottom="5" left="10" right="10" focusEnabled="false" fontSize="12">
+	<mx:AdvancedDataGrid id="printlnGrid" color="#000000" height="43%" bottom="0" left="0" right="0" focusEnabled="false" fontSize="12">
 		<mx:columns>
 			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="150"/>
 			<mx:AdvancedDataGridColumn headerText="Component/Device" dataField="Class" width="160"/>
@@ -103,6 +118,4 @@
 			<mx:AdvancedDataGridColumn headerText="Information" dataField="PrintlnContents"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>
-	
-	<mx:Canvas backgroundAlpha="0.4" backgroundColor="0x335599" bottom="10" left="10" right="10" id="statusBar" height="30"/>
 </mx:Application>
