@@ -23,7 +23,7 @@ import org.eclipse.ui.actions.RetargetAction;
 import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
-import sidecarviz.core.SideCarVisualizations;
+import sidecarviz.SideCarVisualizations;
 
 /**
  * <p>

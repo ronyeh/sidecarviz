@@ -18,10 +18,10 @@ import org.eclipse.ui.texteditor.IDocumentProvider;
 
 import papertoolkit.PaperToolkit;
 import papertoolkit.util.DebugUtils;
+import sidecarviz.SideCarVisualizations;
 import sidecarviz.actions.SideCarCopyAction;
 import sidecarviz.actions.SideCarCutAction;
 import sidecarviz.actions.SideCarPasteAction;
-import sidecarviz.core.SideCarVisualizations;
 
 public class SideCarJavaEditor extends CompilationUnitEditor {
 

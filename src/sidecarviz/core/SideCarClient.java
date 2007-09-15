@@ -19,6 +19,9 @@ public class SideCarClient {
 	private boolean exitFlag = false;
 	private SideCarServer commandHandler;
 
+	/**
+	 * 
+	 */
 	public SideCarClient(String serverName, int port) {
 		machineName = serverName;
 		portNumber = port;
@@ -29,13 +32,11 @@ public class SideCarClient {
 					String line = null;
 					while ((line = br.readLine()) != null) {
 						// print the text of the command / args to the console
-
 						if (commandHandler != null) {
 							commandHandler.handleCommand(line);
 						} else {
 							DebugUtils.println("Unhandled Command: " + line);
 						}
-
 						if (exitFlag) {
 							break;
 						}
@@ -66,6 +67,11 @@ public class SideCarClient {
 		}
 	}
 
+	/**
+	 * @return
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
 	private BufferedReader setupSocketAndReader() throws UnknownHostException, IOException {
 		// DebugUtils.println("Trying to connect to " + machineName + ":" + portNumber);
 		final InetAddress addr = InetAddress.getByName(machineName);

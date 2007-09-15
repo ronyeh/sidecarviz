@@ -11,8 +11,20 @@ import papertoolkit.application.config.Constants.Ports;
 import papertoolkit.external.ExternalCommand;
 import papertoolkit.external.ExternalCommunicationServer;
 import papertoolkit.util.DebugUtils;
+import sidecarviz.SideCarVisualizations;
 
+/**
+ * <p>
+ * </p>
+ * <p>
+ * <span class="BSDLicense"> This software is distributed under the <a
+ * href="http://hci.stanford.edu/research/copyright.txt">BSD License</a>. </span>
+ * </p>
+ * 
+ * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
+ */
 public class SideCarServer {
+	
 	private ExternalCommunicationServer server;
 	private SideCarVisualizations viz;
 
@@ -31,7 +43,7 @@ public class SideCarServer {
 			// url
 			// clipboard contents
 			public void invoke(String... args) {
-				DebugUtils.println("Clipboard Changed at URL: " + args[0]);
+				// DebugUtils.println("Clipboard Changed at URL: " + args[0]);
 				try {
 					String clipboardData = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(
 							DataFlavor.stringFlavor);
