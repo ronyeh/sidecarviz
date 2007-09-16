@@ -15,6 +15,7 @@ import sidecarviz.SideCarVisualizations;
 
 /**
  * <p>
+ * Listens to the instrumented Eclipse and Firefox, and forwards information onto the Flash GUI.
  * </p>
  * <p>
  * <span class="BSDLicense"> This software is distributed under the <a
@@ -24,7 +25,7 @@ import sidecarviz.SideCarVisualizations;
  * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
  */
 public class SideCarServer {
-	
+
 	private ExternalCommunicationServer server;
 	private SideCarVisualizations viz;
 
@@ -90,7 +91,9 @@ public class SideCarServer {
 		});
 		server.addCommand("SC::NewTab", new ExternalCommand() {
 			public void invoke(String... args) {
-				DebugUtils.println("New Firefox Tab");
+				// Not very useful for us to monitor at this point...
+				// NewPage will eventually be called...
+				// DebugUtils.println("New Firefox Tab");
 			}
 		});
 		server.addCommand("SC::UserTyped", new ExternalCommand() {
@@ -115,6 +118,9 @@ public class SideCarServer {
 		server.exitServer();
 	}
 
+	/**
+	 * @param line
+	 */
 	public void handleCommand(String line) {
 		server.handleCommand(line);
 	}

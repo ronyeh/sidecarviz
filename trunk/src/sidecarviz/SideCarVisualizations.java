@@ -5,6 +5,7 @@ import java.util.HashMap;
 
 import papertoolkit.util.DebugUtils;
 import sidecarviz.core.SideCarClient;
+import sidecarviz.core.SideCarPen;
 import sidecarviz.core.SideCarServer;
 import sidecarviz.core.ToolkitListener;
 
@@ -40,13 +41,18 @@ public class SideCarVisualizations {
 		new SideCarVisualizations();
 	}
 
-	private SideCarClient sideCarClient;
+	/**
+	 * Connects to Firefox over port 54321, and listens for information!
+	 * The message handlers happen to be stored in sideCarServer....
+	 */
+	private SideCarClient sideCarClientForFirefoxBrowser;
 	private SideCarServer sideCarServer;
 	private ToolkitListener toolkitListener;
 	private String lastFileAbsolutePath = "";
 
 	private HashMap<Integer, String> fileIDToPath = new HashMap<Integer, String>();
 	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
+	private SideCarPen sideCarPen;
 	private static int uniqueFileHandle = 0;
 
 	/**
@@ -69,21 +75,24 @@ public class SideCarVisualizations {
 		// start a server here... (43210)
 		sideCarServer = new SideCarServer(this);
 
+		// start the local pen...
+		sideCarPen = new SideCarPen(this);
+
+		// wait a second or so
+		try {
+			Thread.sleep(800);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		// will force firefox to open... and start its server at 54321
+		// the flash GUI will connect to us at 43210
+		sideCarServer.openFlashGUI();
+
 		// The green button opens firefox (which starts its own server at 54321)
 		// loads the flex application, which connects to the sidecar server at 43210
 		// connect as a client to firefox to receive information
 		connectToWebBrowser();
-
-		// wait a second or two
-		try {
-			Thread.sleep(1000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		
-		// will force firefox to open... and start its server at 54321
-		// the flash GUI will connect to us at 43210
-		sideCarServer.openFlashGUI();
 	}
 
 	/**
@@ -111,7 +120,8 @@ public class SideCarVisualizations {
 		} else {
 			fileID = pathToFileID.get(currAbsolutePath);
 		}
-		sendToFlashGUI("<currentlyEditing fileID=\"" + fileID + "\" fileName=\"" + javaFile.getName() + "\"/>");
+		sendToFlashGUI("<currentlyEditing fileID=\"" + fileID + "\" fileName=\"" + javaFile.getName()
+				+ "\"/>");
 	}
 
 	/**
@@ -127,11 +137,12 @@ public class SideCarVisualizations {
 	 */
 	public void connectToWebBrowser() {
 		DebugUtils.println("Connect to Web Browser");
-		sideCarClient = new SideCarClient("localhost", 54321);
-		sideCarClient.setCommandHandler(sideCarServer);
+		sideCarClientForFirefoxBrowser = new SideCarClient("localhost", 54321);
+		sideCarClientForFirefoxBrowser.setCommandHandler(sideCarServer);
 	}
 
 	/**
+	 * Forward information to Flash!
 	 * @param message
 	 */
 	public void sendToFlashGUI(String message) {
@@ -145,10 +156,15 @@ public class SideCarVisualizations {
 		DebugUtils.println("Stopping SideCar...");
 		if (sideCarServer != null) {
 			sideCarServer.exit();
+			sideCarServer = null;
 		}
-		if (sideCarClient != null) {
-			sideCarClient.exit();
+		if (sideCarClientForFirefoxBrowser != null) {
+			sideCarClientForFirefoxBrowser.exit();
+			sideCarClientForFirefoxBrowser = null;
 		}
+		// stop the pen as well... =)
+		sideCarPen.stop();
+		sideCarPen = null;
 		instance = null;
 	}
 }
