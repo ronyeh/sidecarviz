@@ -12,7 +12,6 @@
 		<![CDATA[
 			import tools.SideCarBackend;
 			import tools.Images;
-			import components.State;
 
 			[Bindable]
 			private var halfWindowHeight:int = 200;
@@ -24,10 +23,17 @@
 				sc = new SideCarBackend(this);
 				interactionHistory.setSideCar(sc);
 				systemInternals.setSideCar(sc);
-				
 				shelfContainer.visible = true;
 				halfWindowHeight = height/2;
-				shelf.itemRenderer = new ClassFactory(State);
+
+				shelf.addItem();
+				
+				stage.addEventListener(Event.RESIZE, resizeHandler);
+			}
+
+			private function resizeHandler(e:Event):void {
+				trace("Stage Resized");
+				shelf.refresh();
 			}
 			
 			private function displayShelfStopped():void {
@@ -47,42 +53,12 @@
 
 
 	<mx:HBox width="50%" left="0" top="5">
-		<mx:Spacer width="45%" />
-		<mx:Button label="Rewind" styleName="button" click="sc.rewind();"/>
+		<mx:Spacer width="52%" />
+		<mx:Button label="|&lt;" styleName="button" click="sc.rewind();"/>
 		<mx:Button id="playStopButton" label="Play" styleName="button" click="sc.playOrStop();"/>
-		<mx:Button label="Fast Forward" styleName="button" click="sc.fastForward();"/>
+		<mx:Button label="&gt;|" styleName="button" click="sc.fastForward();"/>
 	</mx:HBox>
 
-	<mx:HBox width="50%" right="0" top="5">
-		<mx:Spacer width="25%"/>
-		<mx:Label text="Time:" fontSize="15"/>
-		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
-			maximum="{shelf.numItems-1}" snapInterval="1" width="35%" 
-			showDataTip="false" focusEnabled="false"/>
-		<mx:Button label="+" styleName="button" click="sc.addState()"/>
-		<mx:Spacer width="35%"/>		
-	</mx:HBox>
-
-	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false" horizontalAlign="center">
-		<components:DisplayShelf id="shelf" borderThickness="1" focusEnabled="false"
-			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" 
-			numItems="1" gap="{halfWindowHeight/2.3}" effectEnd="displayShelfStopped()"/>
-		<mx:Canvas backgroundColor="0x565656" borderStyle="solid" borderColor="0x444444" backgroundAlpha="0.35" width="99.5%" cornerRadius="5">
-			<mx:HBox verticalAlign="middle" paddingLeft="5">
-				<mx:Text width="55">
-					<mx:text>
-						Status
-						Message
-					</mx:text>
-				</mx:Text>
-				<mx:VRule height="30" strokeWidth="1" strokeColor="0x585858"/>
-				<mx:Text color="0xDDDDDD" text="Waiting for Input..." id="statusBar" width="100%" height="50" fontFamily="Consolas" fontSize="13" 
-					paddingLeft="5" paddingRight="5" paddingTop="3" paddingBottom="3"/>
-			</mx:HBox>
-		</mx:Canvas>
-	</mx:VBox>
-
-	
 	<!-- This control is kinda wonky, and sometimes introduces a cyan bar on the top of the SWF. Consider using something else. //-->
 	<mx:ApplicationControlBar right="10" top="10" dock="false">
 		<mx:Label text="Search:" fontSize="13"/>
@@ -102,6 +78,37 @@
 				enter="sc.searchBoxSubmitted()" color="0xAAAAAA" focusOut="sc.searchBoxFocusOut()" focusIn="sc.searchBoxClicked()"/>
 		</mx:Canvas>
 	</mx:ApplicationControlBar>
+
+	<!-- The Timeline //-->
+	<mx:HBox width="50%" right="0" top="5">
+		<mx:Spacer width="25%"/>
+		<mx:Label text="Time:" fontSize="15"/>
+		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
+			maximum="{shelf.numItems-1}" snapInterval="1" width="30%" 
+			showDataTip="false" focusEnabled="false"/>
+		<mx:Button label="+" styleName="button" click="sc.addState()"/>
+		<mx:Spacer width="45%"/>		
+	</mx:HBox>
+
+	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false" horizontalAlign="center">
+		<components:DisplayShelf id="shelf" borderThickness="1" focusEnabled="false"
+			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" 
+			numItems="1" gap="{halfWindowHeight/2.3}" effectEnd="displayShelfStopped()"/>
+		<mx:Canvas backgroundColor="0x565656" borderStyle="solid" borderColor="0x444444" backgroundAlpha="0.35" width="99.5%" cornerRadius="5">
+			<mx:HBox verticalAlign="middle" paddingLeft="5">
+				<mx:Text width="55">
+					<mx:text>
+						Status
+						Message
+					</mx:text>
+				</mx:Text>
+				<mx:VRule height="30" strokeWidth="1" strokeColor="0x585858"/>
+				<mx:Text color="0xDDDDDD" text="Waiting for Input..." id="statusBar" width="100%" height="50" fontFamily="Consolas" fontSize="13" 
+					paddingLeft="5" paddingRight="5" paddingTop="3" paddingBottom="3" textAlign="center"/>
+			</mx:HBox>
+		</mx:Canvas>
+	</mx:VBox>
+
 
 	<mx:Canvas top="50" right="0" height="46%">
 		<components:InteractionHistory id="interactionHistory" width="100%" height="100%"/>

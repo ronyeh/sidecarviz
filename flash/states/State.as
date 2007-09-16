@@ -1,5 +1,5 @@
-package components
-{
+package states {
+	
 	import flash.display.Graphics;
 	import flash.display.Sprite;
 	
