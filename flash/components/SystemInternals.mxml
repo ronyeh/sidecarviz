@@ -4,6 +4,10 @@
 
 	<mx:Script>
 		<![CDATA[
+			import ink.InkUtils;
+			import ink.InkStroke;
+			import mx.core.UIComponent;
+			import tools.SideCarBackend;
 			import mx.collections.XMLListCollection;
 			import mx.controls.Tree;
 			import mx.controls.Alert;
@@ -23,13 +27,69 @@
 			// when we find the region, we can add a handler as a child of that region item
 			private var regions:Dictionary = new Dictionary();
 			
-			private var penArray:Object = {1:pen1, 2:pen2, 3:pen3, 4:pen4};
+			private var penArray:Array = new Array();
+			private var sideCar:SideCarBackend;
+
+			private var inkContainer:UIComponent;	
+			private var currInkStroke:InkStroke;
 			
+			private var xMinOffset:Number = -1;
+			private var yMinOffset:Number = -1;
+			
+			public function penDown(id:int, x:String, y:String):void {
+				setPenActive(id);
+
+        		if (currInkStroke!=null) {
+        			inkContainer.removeChild(currInkStroke);
+        		}
+
+				// start up a new stroke
+   				currInkStroke = new InkStroke();
+   				currInkStroke.x = inkStrokeCanvas.width/2;
+   				currInkStroke.y = inkStrokeCanvas.height/2;
+   				currInkStroke.inkWidth = 2;
+   				inkContainer.addChild(currInkStroke);
+			}
+			public function penUp(id:int, x:String, y:String):void {
+				setPenNotActive(id);
+				currInkStroke.rerenderWithCurves();
+			}
+			public function penSample(id:int, xStr:String, yStr:String):void {
+				var xVal:Number = 0;
+				xVal = InkUtils.getCoordinateValueFromString(xStr);
+				// Figure out a minimum offset to reduce these large numbers!
+				if (xMinOffset == -1) { // uninitialized
+					xMinOffset = xVal;
+				}
+				xVal = xVal - xMinOffset;
+	
+				var yVal:Number = 0;
+				yVal = InkUtils.getCoordinateValueFromString(yStr);
+				// Figure out a minimum offset to reduce these large numbers!
+				if (yMinOffset == -1) { // uninitialized
+					yMinOffset = yVal;
+				}
+				yVal = yVal - yMinOffset;
+	
+				// add samples to the current stroke
+				currInkStroke.addPoint(xVal, yVal);
+			}
+
+
+		
 			public function init():void {
+				inkContainer = new UIComponent();
+				inkStrokeCanvas.addChild(inkContainer);
+				
 				timerExpandTree = new Timer(400);
 				timerExpandTree.addEventListener(TimerEvent.TIMER, timerExpandHandler);
 				paperUITreeData = new XMLListCollection();
 				paperUITree.dataProvider = paperUITreeData;
+				penArray.push(pen1, pen2, pen3, pen4);
+			}
+
+			public function setSideCar(sc:SideCarBackend):void {
+				sideCar = sc;
 			}
 
 			public function addSheetItem(sheetName:String):void {
@@ -74,6 +134,7 @@
 				}
 			}
 
+
 			// expands the tree in half a second
 			public function timerExpandHandler(e:TimerEvent):void {
 				timerExpandTree.stop();
@@ -89,14 +150,19 @@
 			
 			// this is now zero indexed... so it works!
 			public function setPenActive(indx:int):void {
-				penArray[indx].source = Images.PenActive;
+				var penImg:Image = penArray[indx];
+				// trace("Active: " + penImg);
+				penImg.source = Images.PenActive;
 				setCurrentActivePen(indx);
 			}
 			public function setPenNotActive(indx:int):void {
-				penArray[indx].source = Images.PenInactive;
+				var penImg:Image = penArray[indx];
+				// trace("Not Active: " + penImg);
+				penImg.source = Images.PenInactive;
 			}
 			private function setCurrentActivePen(indx:int):void {
 				currentPen.text = "Pen " + indx;
+				sideCar.setStatusMessage("Writing with " + currentPen.text);
 			}
 
 			private function treeChanged(event:Event):void {
@@ -133,7 +199,9 @@
 					<mx:Spacer width="70%"/>
 					<mx:Text styleName="detailsText" id="currentDuration" text="10 seconds"/>
 				</mx:HBox>
-				<mx:Canvas backgroundColor="0x000000" width="100%" height="100%" borderThickness="2" borderColor="0x333333" borderStyle="solid" cornerRadius="10"/>
+				<mx:Canvas id="inkStrokeCanvas"
+					backgroundColor="0x000000" width="100%" height="100%" borderThickness="2" 
+					borderColor="0x333333" borderStyle="solid" cornerRadius="10"/>
 			</mx:VBox>
 		</mx:HBox>
 

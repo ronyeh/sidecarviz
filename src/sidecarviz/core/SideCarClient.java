@@ -10,6 +10,16 @@ import java.net.UnknownHostException;
 
 import papertoolkit.util.DebugUtils;
 
+/**
+ * <p>
+ * </p>
+ * <p>
+ * <span class="BSDLicense"> This software is distributed under the <a
+ * href="http://hci.stanford.edu/research/copyright.txt">BSD License</a>. </span>
+ * </p>
+ * 
+ * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
+ */
 public class SideCarClient {
 
 	private String machineName;
@@ -81,6 +91,9 @@ public class SideCarClient {
 		return br;
 	}
 
+	/**
+	 * @param sideCarServer
+	 */
 	public void setCommandHandler(SideCarServer sideCarServer) {
 		commandHandler = sideCarServer;
 	}

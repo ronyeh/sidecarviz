@@ -78,6 +78,7 @@ package tools {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
             var searchQuery:String = "";
+            // trace("Incoming Message: " + msg.toXMLString());
             switch(msgName) {
             	case "eventHandler":
             		addSystemOutputData(msg.@time, msg.@component, msg.@handlerName, "");
@@ -103,11 +104,24 @@ package tools {
 				case "currentlyEditing":
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
 					break;
+				case "penDown":
+					gui.systemInternals.penDown(parseInt(msg.@penID), msg.@x, msg.@y);
+					break;
+				case "penUp":
+					gui.systemInternals.penUp(parseInt(msg.@penID), msg.@x, msg.@y);
+					break;
+				case "penSample":
+					gui.systemInternals.penSample(parseInt(msg.@penID), msg.@x, msg.@y);
+					break;
             	default:
 		            trace("Unhandled: " + msg.toXMLString());
     	        	break;
             }
         }
+
+		public function setStatusMessage(str:String):void {
+			gui.statusBar.text = str;
+		}
 
 		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
 		public function addSystemOutputData(time:String, where:String, event:String, info:String):void {
@@ -173,7 +187,7 @@ package tools {
 		
 
 		public function toggleDetailsVisibility():void {
-			if (gui.systemDetails.alpha > 0) {
+			if (gui.systemInternals.alpha > 0) {
 				gui.fOutDetails.play();
 			} else {
 				gui.fInDetails.play();
@@ -189,11 +203,11 @@ package tools {
 		}
 
 		public function endFadeOutDetails():void {
-			gui.systemDetails.visible = false;
+			gui.systemInternals.visible = false;
 			gui.detailsButton.label = "Show System Details";
 		}
 		public function startFadeInDetails():void {
-			gui.systemDetails.visible = true;
+			gui.systemInternals.visible = true;
 			gui.detailsButton.label = "Hide";
 		}
 

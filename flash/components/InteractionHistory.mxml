@@ -2,17 +2,23 @@
 <mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" minWidth="400" alpha="0.7" backgroundColor="0x222222" addedToStage="init()">
 	<mx:Script>
 		<![CDATA[
+			import tools.SideCarBackend;
 			import mx.collections.ArrayCollection;
 
 			private var interactionData:ArrayCollection = new ArrayCollection();
 			private var scrollTimer:Timer;
 			private var lastItem:Object;
+			private var sideCar:SideCarBackend;
 
 			// sets up the component
 			public function init():void {
 				interactionHistory.dataProvider = interactionData;
 				scrollTimer = new Timer(200);
 				scrollTimer.addEventListener(TimerEvent.TIMER, makeLastItemVisible);
+			}
+	
+			public function setSideCar(sc:SideCarBackend):void {
+				sideCar = sc;
 			}
 	
 			// scrolls the table all the way down in 200 ms
