@@ -106,10 +106,8 @@ package components {
 		// as opposed to creating them each time, as we are doing now...
 
 		
-		public function addItem():void {
-			var state:State = new State();
-			state.pageHeight = height;
-
+		public function addItem(state:State):void {
+			state.displayShelfHeight = height;
 
 			var i:int = myItems.length; // the index we need for the tilting pane
 
