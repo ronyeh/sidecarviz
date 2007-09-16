@@ -147,8 +147,7 @@ package tools {
 
 		// adds a state to the shelf
 		public function addState():void {
-			gui.shelf.numItems = gui.shelf.numItems+1;
-			gui.shelf.selectedIndex = gui.shelf.numItems-1;
+			gui.shelf.addItem();
 		}
 		
 		

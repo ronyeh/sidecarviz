@@ -15,9 +15,8 @@ package components {
     import mx.effects.AnimateProperty;
     import mx.effects.easing.Quadratic;
     import mx.events.CollectionEvent;
-    import mx.managers.HistoryManager;
     import mx.managers.IFocusManagerComponent;
-    import mx.managers.IHistoryManagerClient;
+    import states.State;
 
     // defining styles on the DisplayShelf.  By defining these styles here in metadata, developers will be allowed
     // to specify values for these styles as attributes on the MXML tag.  Note that this component doesn't actually
@@ -34,28 +33,11 @@ package components {
     // defining the default property.  By declaring dataProvider as our defaultProperty, we are allowing developers to specify the value of 
     // default property as the content of the DisplayShelf tag, without having to explciitly call it out as the value for defaultProperty.
     [DefaultProperty("dataProvider")]
-
 	[DefaultProperty("numItems")]
-
 	[DefaultProperty("gap")]
     
-    /* our custom component. Note a few things:
-    /  1. we're extending UIComponent, not Canvas or some other Container. It's a common misconception that if you're going to
-    /  have children, you must extend Container. Not True. Extend container if you want to do what containers do...namely, aggregate children
-    /  specified in MXML...if you want easy access to a container's predefined layout algorithm...or if you want scrolling and clipping capabilities
-    /  out of the box.  Otherwise, using UIComponent as your base class is much simpler. All UIComponents can contain children for implementation purposes.
-    /  2. We're implementing the IHistoryManagerClient interface. This allows us to save off our state whenever someone tells the history manager to save.
-    /  we're making this component behave like the navigator classes...optionally, you can have the back button navigate back to previous selections of this component.
-    /  3.  We're implementing IFocusManager component.  We do that to let the Focus Manager know that we want to accept focus and keyboard events.  All of the functionality
-    /  to do this is already supported in UICompoent, our base class...all we need to do is add this 'marker' interface, and override the keyDownHandler method to add our
-    /  logic to interpret keystrokes.    
-    */
-    public class DisplayShelf extends UIComponent implements IHistoryManagerClient, IFocusManagerComponent {
+    public class DisplayShelf extends UIComponent implements IFocusManagerComponent {
     	
-        //---------------------------------------------------------------------------------------
-        // constants
-        //---------------------------------------------------------------------------------------
-
         // how far, in pixels, each child will be spaced when stacked sideways. 
         // This probably should be a percentage of the size of the children...i.e., overlap 1/5th...but
         // we're taking a shortcut here by defining it in pixels.        
@@ -69,12 +51,12 @@ package components {
         // the non-selected items.
         private var _popout:Number = .2;
 
-        // a flag to let us know when our children are dirty. We're going to be putting our children creation logic in our commitProperties function. Often
-        // there's more than one set of update logic that goes into commitProperties, so it's nice to store an extra flag to let you know whether a particular
-        // bit of updateLogic needs to be run. We'll set this flag when anything changes that requires us to regenerate our children.
-        private var _itemsDirty:Boolean = true;
         // our array of children.  These are the TiltingTiles that we'll generate, one for each item in the dataProvider.
         private var _children:Array = [];
+
+
+
+        
         // the tilt angle for the non-selected children. This can be set by the developer.
         private var _angle:Number = 5;
         // the current selected index, as set by the developer.
@@ -83,11 +65,15 @@ package components {
         // selected index to selected index when it changes, our 'current' position is different from the 'selected' position. By keeping track of this 
         // value, we can make sure that when we draw we're always drawing the 'current' index as it animates towards the selected index.
         private var _currentPosition:Number = 0;
+        
+        
         // a map that allows us to use an itemRenderer (actually, a tiltingTile) as a key to map back to the index of the it represents. We'll use this when
         // the user clicks on one of the tilting tiles to decide what our new selected index is.  We _could_ just iterate over our children list to 
         // find the index on click, but there are lots of use cases where you need to store extra data about an itemRenderer that can't be easily looked up.
         // in those cases, Dictionaries are really useful tools. So we'll use one here just as a demonstration.
-        private var _itemIndexMap:Dictionary;
+        private var _itemIndexMap:Dictionary = new Dictionary(true);
+
+
         // a flag to control whether we want to automatically enable history management when the selected index changes.  This way the component
         // can be used in scenarios where it doesn't represent a 'location' to the user.
         private var _enableHistory:Boolean = false;
@@ -99,8 +85,7 @@ package components {
         // we want to calculate it only once and then store it off. But if we stored it back into our selected index property, we'd need to worry about scenarios where
         // the selectedIndex gets assigned before the dataprovider does. So we store it in a separate variable, so as not to trample the 'true' selected index.
         private var _safeSelectedIndex:Number;
-        // storage for the item renderer factory, that will generate item renderer interfaces for us as necessary.
-        private var _itemRenderer:IFactory;
+
         // the effect we'll use to animate from old to new selected index.  If the user changes selected index in the middle of an animation, we'll want to cancel
         // the old one, so we keep a reference to it.
 		private var _animation:AnimateProperty;
@@ -112,7 +97,52 @@ package components {
 		private var _selectOnClick:Boolean = true;
 		
 		
-		private var nItems:int = 1;
+		private var nItems:int = 0;
+		
+		private var myItems:Array = new Array(); // items!
+
+		
+		// really, we should maintain an internal array of State objects, and readd them every time
+		// as opposed to creating them each time, as we are doing now...
+
+		
+		public function addItem():void {
+			var state:State = new State();
+			state.pageHeight = height;
+
+
+			var i:int = myItems.length; // the index we need for the tilting pane
+
+            var tilt:TiltingPane = new TiltingPane();
+            /*   put an entry in our dictionary mapping our tilting tile to its index in the dataProvider.
+            *    When the user clicks on one of our tilting tile, we'll use this map to figure out the index
+            *    of the item they just clicked on, and hence what our new selected index should be */
+            _itemIndexMap[tilt] = i;
+
+	        /*  add the tilting tile to our array of children*/
+	        _children[i] = tilt;
+            
+            /*   add a click event handler to our tiltingPane, so we can automatically update the selected index.
+            *    note that we're again using weak references here for our event listener.  In this case, since these are
+            *    entirely self contained objects, we don't actually need to use a weak listener here.  But we're a bit lazy,
+            *    and since we know that we're not going to run into any of the pitfalls of weak references, we go ahead
+            *    and use them anyway. Alternatively, we could have been explicit about removing the listener when we 
+            *    removed the tilting panes later on.
+            */
+            tilt.addEventListener(MouseEvent.CLICK,itemClickHandler,false,0,true);
+
+            /*   set the tiltingTile's styleName to us, the parent componment. This is common practice for styling sub-components
+            *    of a parent component.  By doing this, the TiltingTile inherits _all_ of our styles...not just the inheriting ones...
+            *    which allows us to easily facade style values from the children up through us for our component developers to specify in CSS.
+            */
+            tilt.styleName = this;
+            tilt.content = state;
+            addChildAt(tilt,0);
+            myItems.push(state);
+            numItems = myItems.length;
+			selectedIndex = numItems-1;
+		}
+		
 		
 		public function set gap(g:int):void {
             kPaneGap = g;
@@ -124,18 +154,6 @@ package components {
 
         public function DisplayShelf() {
             super();
-            
-            
-            // we register with the history manager to let it know that we will want to save state whenever someone tells the history manager to remember
-            // the current state of the application.
-            HistoryManager.register(this);
-
-            _itemIndexMap = new Dictionary(true);
-
-            // set up a default item renderer. We could require the developer to always specify one, but if we've got an 80% use case, it's nice to define
-            // a default one.  Note that this does force the compiler to link in the Image class, even if the developer turns around and redefines the itemRenderer
-            // property, so there is a potential price to pay in application size. Chances are pretty good the developer is using Image somewhere though.
-            _itemRenderer = new ClassFactory(State);
         }
 
 
@@ -198,10 +216,6 @@ package components {
             dispatchEvent(new Event("change"));            
             // when the selected index changes, we'll want to kick-start our animation.
             startAnimation();
-            
-            // tell the history manager that something significant to the history has changed.
-            if(_enableHistory)
-                HistoryManager.save();
         }
         
         public function get selectedIndex():Number
@@ -224,50 +238,32 @@ package components {
         {
             return _currentPosition;
         }
+
+		public function refresh():void {
+            invalidateDisplayList();
+            invalidateProperties();
+            invalidateSize();
+		}
+
+		
         
         [Bindable]
         public function set numItems(n:int):void {
         	nItems = n;
-            _itemsDirty = true;
-            invalidateProperties();
-            invalidateSize();
+        	refresh();
         }
-        public function get numItems():int
-        {
+        
+        public function get numItems():int {
             return nItems;
         }
         
-        /*    The UIComponent that we'll use to render our items.  Since we need to create multiple of these...one for each item in the
-        *    dataprovider...we need not an itemRenderer, but a _factory_ that can create itemRenderers on demand.  That's why we type
-        *    this property as an IFactory. IFactory is a special interface that signals to the compiler that we need an object that implements
-        *    the factory pattern. When the MXML compiler sees a property of type IFactory, it allows the developer specify it's value in one
-        *    of three ways:
-        *    By specifying an object that implements the IFactory interface (that's normal).
-        *    By specifying the name of a class...it automatically wraps the class in an instance of ClassFactory and assigns that to the property.
-        *    By defining a component inline via <mx:Component>...it defines an implicit class, wraps it in a ClassFactory instance, and assigns that.
-        */
-        public function set itemRenderer(value:IFactory):void
-        {
-            _itemRenderer = value;
-            /* store off the value, and set the flag to say that we need to re-generate all of our item renderers*/
-            _itemsDirty = true;
-            invalidateProperties();
-            invalidateSize();
-        }
-        public function get itemRenderer():IFactory
-        {
-            return _itemRenderer;
-        }
-
         /* The angle of the background non-selected items*/
-        public function set angle(value:Number):void
-        {        
+        public function set angle(value:Number):void {        
             _angle = value;
             invalidateDisplayList();
         }
         
-        public function get angle():Number
-        {
+        public function get angle():Number {
             return _angle;
         }
         
@@ -289,80 +285,13 @@ package components {
         // property management
         //---------------------------------------------------------------------------------------
 
-        /*    this is the standard function where components put performance intensive computations and side-effects
+        /*   this is the standard function where components put performance intensive computations and side-effects
         *    from changes to their properties.  By calling invalidateProperties(), a component guarantees that this function
         *    will get called by the layout manager before the next time the screen is going to be updated, before their 
         *    measure() or updateDisplayList() functions are called (if necessary).  Note that there is no guarantee about the
         *    order in which commitProperties is called from component to component (i.e., it's not parent before child or vice versa).
         */
-        override protected function commitProperties():void
-        {
-            /*     as components get more and more complicated, this function often grows to do more and more processing.
-            *    as a performance optimization, it's usually good to put guards around different computations to make sure
-            *    you're only re-calculating what you need to on any given pass. In this case, we've defined a flag to let us
-            *    know when something has changed that requires us to regenerate our item renderers.
-            *
-            *    When a component creates children/sub-components, there's generally two places it should consider doing it.
-            *    For 'static' sub components, that don't come and go as the component is used, it's best to create them in the 
-            *    createChildren() function.  But for children that are created and destroyed as the component is used,
-            *    it's best to muck with them in the commitProperties() function. Adding children to a component automatically 
-            *    invalidates its size and display.  Since commit properties runs before measure() and updateDisplayList() runs, 
-            *    adding children here won't accidentally trigger _another_ validation pass, which would happen if you tried to create them
-            *    in updateDisplayList(). 
-            */ 
-            if(_itemsDirty)
-            {
-                _itemsDirty = false;
-                /* we're going to create an item renderer for each item in the data provider */
-
-                /*     first, let's clear out our old item renderers.  Now this is horribly inefficient...if, say, the 
-                *    developer just added a single item to the data provider, there's no reason we need to throw all the 
-                *    old ones away. But we're going to do it for simplicity's sake here. In your code, be more efficient ;)
-                */
-                for(i = numChildren-1;i>=0;i--) {
-                    removeChildAt(numChildren-1);
-                }
-                
-                /*    clear out our children list and child -> index map, since we just threw away all of our children */
-                _itemIndexMap = new Dictionary(true);
-                _children = [];                
-                
-                for(var i:int = 0;i<numItems;i++) {
-                    /* first, create a tilting Tile for the item, since that's going to give us our 3D effect */
-                    var t:TiltingPane = new TiltingPane();
-                    /*     put an entry in our dictionary mapping our tilting tile to its index in the dataProvider.
-                    *    When the user clicks on one of our tilting tile, we'll use this map to figure out the index
-                    *    of the item they just clicked on, and hence what our new selected index should be */
-                    _itemIndexMap[t] = i;
-                    /*     add a click event handler to our tiltingPane, so we can automatically update the selected index.
-                    *    note that we're again using weak references here for our event listener.  In this case, since these are
-                    *    entirely self contained objects, we don't actually need to use a weak listener here.  But we're a bit lazy,
-                    *    and since we know that we're not going to run into any of the pitfalls of weak references, we go ahead
-                    *    and use them anyway. Alternatively, we could have been explicit about removing the listener when we 
-                    *    removed the tilting panes later on.
-                    */
-                    t.addEventListener(MouseEvent.CLICK,itemClickHandler,false,0,true);
-                    /*    set the tiltingTile's styleName to us, the parent componment. This is common practice for styling sub-components
-                    *    of a parent component.  By doing this, the TiltingTile inherits _all_ of our styles...not just the inheriting ones...
-                    *    which allows us to easily facade style values from the children up through us for our component developers to specify in CSS.
-                    */
-                    t.styleName = this;
-                    /*  add the tilting tile to our array of children*/
-                    _children[i] = t;
-
-                    /*     Now it's time to use our itemRenderer factory.  We've created a TiltingTile for our item, but our TiltingTile needs to 
-                    *    know exactly what it is that it's going to be tilting.  To do that, we ask our itemRenderer factory to create an instance for us.
-                    */
-                    var content:UIComponent = UIComponent(_itemRenderer.newInstance());
-
-					var state:State = new State();
-					state.pageHeight = height;
-                    t.content = state;
-                    
-                    addChildAt(t,0);
-                }
-            }
-            
+        override protected function commitProperties():void {
             /*     since the size of our dataProvider might have just changed, we'll revalidate our selected index to make sure it's 
             *    a valid index into the data.
             */
@@ -640,9 +569,7 @@ package components {
         *    we respond to this event based on what really happened...i.e., if an item was added, there's no
         *    need to regenerate _all_ our item renderers. Exercise for the reader ;)
         */
-        private function dataChangeHandler(event:CollectionEvent):void
-        {
-            _itemsDirty = true;
+        private function dataChangeHandler(event:CollectionEvent):void {
             invalidateProperties();
         }
 
