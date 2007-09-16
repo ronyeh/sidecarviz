@@ -9,6 +9,9 @@ package tools {
 	import mx.collections.ArrayCollection;
 	import mx.events.MenuEvent;
 	import mx.controls.Alert;
+	import states.Page;
+	import states.State;
+	import states.VisualFeedback;
 	
 	// controls the main interaction
 	public class SideCarBackend {
@@ -146,8 +149,13 @@ package tools {
 		}
 
 		// adds a state to the shelf
-		public function addState():void {
-			gui.shelf.addItem();
+		public function addVisualOutputState():void {
+			var state:State = new VisualFeedback();
+			gui.shelf.addItem(state);
+		}
+		public function addPageState():void {
+			var state:State = new Page();
+			gui.shelf.addItem(state);
 		}
 		
 		
