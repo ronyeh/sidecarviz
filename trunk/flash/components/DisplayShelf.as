@@ -17,6 +17,10 @@ package components {
     import mx.events.CollectionEvent;
     import mx.managers.IFocusManagerComponent;
     import states.State;
+    import ink.InkStroke;
+    import states.State;
+    import states.VisualFeedback;
+    import states.Page;
 
     // defining styles on the DisplayShelf.  By defining these styles here in metadata, developers will be allowed
     // to specify values for these styles as attributes on the MXML tag.  Note that this component doesn't actually
@@ -59,8 +63,10 @@ package components {
         
         // the tilt angle for the non-selected children. This can be set by the developer.
         private var _angle:Number = 5;
+
         // the current selected index, as set by the developer.
         private var _selectedIndex:Number = 0;        
+        
         // the index (or rather, value, since it can be fractional) of the item at the center of our list as currently displayed. Since we animate from
         // selected index to selected index when it changes, our 'current' position is different from the 'selected' position. By keeping track of this 
         // value, we can make sure that when we draw we're always drawing the 'current' index as it animates towards the selected index.
@@ -99,13 +105,12 @@ package components {
 		
 		private var nItems:int = 0;
 		
+		//
 		private var myItems:Array = new Array(); // items!
 
 		
 		// really, we should maintain an internal array of State objects, and readd them every time
 		// as opposed to creating them each time, as we are doing now...
-
-		
 		public function addItem(state:State):void {
 			state.displayShelfHeight = height;
 
@@ -141,6 +146,16 @@ package components {
 			selectedIndex = numItems-1;
 		}
 		
+		public function addInkStroke(stroke:InkStroke):void {
+			// get the current item, and pass the stroke to it...
+			var currState:State = myItems[_selectedIndex] as State;
+			if (currState is Page) {
+				var currPage:Page = currState as Page;
+				currPage.addInkStroke(stroke);
+			} else if (currState is VisualFeedback){
+				
+			}
+		}
 		
 		public function set gap(g:int):void {
             kPaneGap = g;
@@ -216,26 +231,12 @@ package components {
             startAnimation();
         }
         
-        public function get selectedIndex():Number
-        {
+        public function get selectedIndex():Number {
             return _selectedIndex;
         }
 
 
-        /*    This property represents the current position in the child items that our component is looking at.
-        *    All of our rendering is done off of this property. By exposing it as a public property, we can animate
-        *    it, which means that even though we're incorporating animation, our rendering will always be in sync
-        *    with the internal state of our application
-        */
-        public function set currentPosition(value:Number):void
-        {
-            _currentPosition = value;
-            invalidateDisplayList();
-        }
-        public function get currentPosition():Number
-        {
-            return _currentPosition;
-        }
+
 
 		public function refresh():void {
             invalidateDisplayList();
@@ -541,15 +542,15 @@ package components {
 
         /*    this is our event handler for when a user clicks on an item.
         */
-        private function itemClickHandler(e:MouseEvent):void
-        {
+        private function itemClickHandler(e:MouseEvent):void {
             /* again, if the developer wants different UI behavior, allow them to disable this */
-            if(_selectOnClick == false)
+            if(_selectOnClick == false) {
                 return;
+            }
                 
-            /*     find out what the index is of the selected item.  To do this, we map back from the 
-            *      item clicked on to an index in our itemIndexMap.  Since we re-order our children
-            *      to get depth and layering correct, we couldn't necessarily just ask for the child index...
+            /*   find out what the index is of the selected item.  To do this, we map back from the 
+            *    item clicked on to an index in our itemIndexMap.  Since we re-order our children
+            *    to get depth and layering correct, we couldn't necessarily just ask for the child index...
             *    the child index would be different from the item's index in the dataProvider.  We could
             *    iterate over the children array to find the one that was clicked on, but that might have
             *    bad performance implications. Instead, we use a dictionary to quickly map from a child to
@@ -655,8 +656,7 @@ package components {
         /*    this function, in turn, gets called whenever someone tries to navigate (back or forth) to a stored state.
         *    this funciton gives us a chance to read out our stored state and react accordingly.
         */        
-        public function loadState(state:Object):void
-        {
+        public function loadState(state:Object):void {
             if(_enableHistory == false)
                 return;
         
@@ -672,6 +672,17 @@ package components {
                 selectedIndex = newIndex;
                 _enableHistory = eh;
             }
+        }
+
+        
+		// the index of the item currently positioned in the middle (it might not be the one we selected, as we
+		// are still animating toward _selectedIndex
+        public function set currentPosition(value:Number):void {
+            _currentPosition = value;
+            invalidateDisplayList();
+        }
+        public function get currentPosition():Number {
+            return _currentPosition;
         }
     }
 }

@@ -12,6 +12,7 @@ package tools {
 	import states.Page;
 	import states.State;
 	import states.VisualFeedback;
+	import ink.InkStroke;
 	
 	// controls the main interaction
 	public class SideCarBackend {
@@ -111,7 +112,8 @@ package tools {
 					gui.systemInternals.penDown(parseInt(msg.@penID), msg.@x, msg.@y);
 					break;
 				case "penUp":
-					gui.systemInternals.penUp(parseInt(msg.@penID), msg.@x, msg.@y);
+					var stroke:InkStroke = gui.systemInternals.penUp(parseInt(msg.@penID), msg.@x, msg.@y);
+					gui.shelf.addInkStroke(stroke);
 					break;
 				case "penSample":
 					gui.systemInternals.penSample(parseInt(msg.@penID), msg.@x, msg.@y);
