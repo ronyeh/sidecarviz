@@ -10,14 +10,14 @@ import papertoolkit.paper.Sheet;
 import papertoolkit.pen.ink.InkStroke;
 import papertoolkit.util.DebugUtils;
 
-public class PaperApp {
+public class TestApp0 {
 	
 	// create some regions
 	// bind them at runtime to some place in your notebook
 	// save these mappings in the right place
 	// test out our event handlers, and monitor them with sidecar
 	// event save and replay with sidecar
-	public PaperApp() {
+	public TestApp0() {
 		Application application = PaperToolkit.createApplication();
 		Sheet genericPage = application.createSheet();
 		Region region = genericPage.createRegion(0, 0, 2, 2);
@@ -35,6 +35,6 @@ public class PaperApp {
 		application.run();
 	}
 	public static void main(String[] args) {
-		new PaperApp();
+		new TestApp0();
 	}
 }

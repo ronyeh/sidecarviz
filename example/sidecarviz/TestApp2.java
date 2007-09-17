@@ -1,16 +1,16 @@
 package sidecarviz;
 
-import papertoolkit.PaperToolkit;
 import papertoolkit.application.Application;
 import papertoolkit.events.PenEvent;
 import papertoolkit.events.handlers.ClickHandler.ClickAdapter;
 import papertoolkit.paper.Region;
 import papertoolkit.paper.Sheet;
+import papertoolkit.paper.Sheet.SheetSize;
 import papertoolkit.util.DebugUtils;
 
 /**
  * <p>
- * Tests SideCar...
+ * Eventual goal, to develop an application _while_ sidecar is running! =)
  * </p>
  * <p>
  * <span class="BSDLicense"> This software is distributed under the <a
@@ -19,35 +19,26 @@ import papertoolkit.util.DebugUtils;
  * 
  * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
  */
-public class TestApp {
+public class TestApp2 {
 
-	public TestApp() {
-		Application app = PaperToolkit.createApplication();
-		Sheet sheet = app.createSheet();
+	public TestApp2() {
+		Application application = new Application("Test");
+		Sheet sheet = new Sheet(SheetSize.B7);
 		Region region = sheet.createRegion();
 		region.addEventHandler(new ClickAdapter() {
 			public void clicked(PenEvent e) {
-				DebugUtils.println("Clicked on Box 1...");
+				DebugUtils.println("Clicked at: " + e.getPercentageLocation());
 			}
 		});
 
-		Region region2 = sheet.createRegion();
-		region2.addEventHandler(new ClickAdapter() {
-			public void clicked(PenEvent e) {
-				DebugUtils.println("Clicked on Box 2...");
-			}
-		});
-		// region2.addEventHandler(new HandwritingHandler() {
-		// public void contentArrived() {
-		// String writing = recognizeHandwriting();
-		// DebugUtils.println(writing);
-		// }
-		// });
+		// track output to devices... new Device(LOCAL) or new Device(REMOTE)... if it's REMOTE (default?)
+		// we will ask for the REMOTE computer's IP Address or Host Name at runtime and save it into devices/ or mappings/
 
-		app.run();
+		application.addSheet(sheet);
+		application.run();
 	}
 
 	public static void main(String[] args) {
-		new TestApp();
+		new TestApp2();
 	}
 }

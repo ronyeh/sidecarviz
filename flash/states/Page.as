@@ -13,7 +13,7 @@ package states
 		private var shape:Sprite = new Sprite();
 		private var pageHeightVal:int = 200;
 
-		private var inkWell:Ink = new Ink();
+		private var inkWell:Ink = new Ink(false);
 		 
 		public function Page():void {
 			pageHeight = pageHeightVal;
@@ -50,6 +50,7 @@ package states
 			for (var i:int=0; i<xArr.length; i++) {
 				newStroke.addPoint(xArr[i], yArr[i]);
 			}
+			newStroke.rerenderWithCurves();
 			inkWell.addStroke(newStroke);
 			inkWell.recenterTheCenter(new Rectangle(0,0,explicitWidth,explicitHeight));
 		}

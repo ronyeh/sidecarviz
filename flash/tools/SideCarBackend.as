@@ -30,6 +30,10 @@ package tools {
 		// the array storing the data for the lower pane
 		private var printlnData:ArrayCollection = new ArrayCollection();
 
+		// for segmenting interactions...
+		private var timeOfLastPenUp:Number = 0;
+
+
 		public function SideCarBackend(ui:SideCar):void {
 			gui = ui;
 			// start the communication with Java
@@ -109,9 +113,18 @@ package tools {
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
 					break;
 				case "penDown":
-					gui.systemInternals.penDown(parseInt(msg.@penID), msg.@x, msg.@y);
+					// track the time here, and add a new page if appropriate
+					// 3.5 secs have passed
+					// TODO: We should also add a new page if the ink is sufficiently far from the last ink sample
+					if (new Date().time - timeOfLastPenUp > 3500) { 
+						addPageState();
+						gui.systemInternals.penDown(parseInt(msg.@penID), msg.@x, msg.@y, true);
+					} else {
+						gui.systemInternals.penDown(parseInt(msg.@penID), msg.@x, msg.@y);
+					}
 					break;
 				case "penUp":
+					timeOfLastPenUp = new Date().time;
 					var stroke:InkStroke = gui.systemInternals.penUp(parseInt(msg.@penID), msg.@x, msg.@y);
 					gui.shelf.addInkStroke(stroke);
 					break;
