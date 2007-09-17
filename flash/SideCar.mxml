@@ -86,8 +86,7 @@
 		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
 			maximum="{shelf.numItems-1}" snapInterval="1" width="30%" 
 			showDataTip="false" focusEnabled="false"/>
-		<mx:Button label="+V" styleName="button" click="sc.addVisualOutputState()"/>
-		<mx:Button label="+P" styleName="button" click="sc.addPageState()"/>
+		<mx:Button label="+" click="sc.addPageState()"/>
 		<mx:Spacer width="45%"/>		
 	</mx:HBox>
 

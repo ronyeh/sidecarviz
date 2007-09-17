@@ -4,6 +4,8 @@
 
 	<mx:Script>
 		<![CDATA[
+			import ink.Ink;
+			import mx.graphics.Stroke;
 			import ink.InkUtils;
 			import ink.InkStroke;
 			import mx.core.UIComponent;
@@ -36,23 +38,45 @@
 			private var xMinOffset:Number = -1;
 			private var yMinOffset:Number = -1;
 			
+			private var timeOfLastPenUp:Number = 0;
+
+			private var inkWell:Ink;			
+			
 			public function penDown(id:int, x:String, y:String):void {
 				setPenActive(id);
 
-        		if (currInkStroke!=null) {
-        			inkContainer.removeChild(currInkStroke);
-        		}
+				if (new Date().time - timeOfLastPenUp > 4000) { // 4 secs have passed
+					if (inkWell != null) {
+						inkContainer.removeChild(inkWell);
+					}
+					inkWell = new Ink();
+	   				inkContainer.addChild(inkWell);
+				}
 
 				// start up a new stroke
    				currInkStroke = new InkStroke();
-   				currInkStroke.x = inkStrokeCanvas.width/2;
-   				currInkStroke.y = inkStrokeCanvas.height/2;
+   				currInkStroke.x = inkStrokeCanvas.width/4;
+   				currInkStroke.y = inkStrokeCanvas.height/4;
    				currInkStroke.inkWidth = 2;
-   				inkContainer.addChild(currInkStroke);
 			}
-			public function penUp(id:int, x:String, y:String):void {
+			public function penUp(id:int, x:String, y:String):InkStroke {
 				setPenNotActive(id);
 				currInkStroke.rerenderWithCurves();
+				timeOfLastPenUp = new Date().time;
+
+				// add it once we have added all the samples
+   				inkWell.addStroke(currInkStroke);
+				
+				var sX:Number = inkStrokeCanvas.width/(inkWell.maxX - inkWell.minX);
+				var sY:Number = inkStrokeCanvas.height/(inkWell.maxY - inkWell.minY);
+				var minScale:Number = Math.min(sX, sY);
+								
+				if (sX < 1) { // do not scale up
+					inkWell.scaleX = minScale;
+					inkWell.scaleY = minScale;				
+				}
+				
+				return currInkStroke; // we should have a clone method...
 			}
 			public function penSample(id:int, xStr:String, yStr:String):void {
 				var xVal:Number = 0;
@@ -79,6 +103,7 @@
 		
 			public function init():void {
 				inkContainer = new UIComponent();
+				inkStrokeCanvas.clipContent = true;
 				inkStrokeCanvas.addChild(inkContainer);
 				
 				timerExpandTree = new Timer(400);
