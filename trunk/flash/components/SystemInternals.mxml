@@ -28,41 +28,39 @@
 			// indexed by _SheetName_RegionName... your regions better have unique names within their parent sheet!
 			// when we find the region, we can add a handler as a child of that region item
 			private var regions:Dictionary = new Dictionary();
-			
+
 			private var penArray:Array = new Array();
 			private var sideCar:SideCarBackend;
-
 			private var inkContainer:UIComponent;	
 			private var currInkStroke:InkStroke;
-			
 			private var xMinOffset:Number = -1;
 			private var yMinOffset:Number = -1;
-			
-			private var timeOfLastPenUp:Number = 0;
-
 			private var inkWell:Ink;			
 			
-			public function penDown(id:int, x:String, y:String):void {
+			private var totalNumStrokesCaptured:uint = 0;
+			
+			// even if we don't get a "new segment", we should dump the children every few strokes...
+			// we should reset the xOffset/yOffset on a new segment
+			public function penDown(id:int, x:String, y:String, newSegment:Boolean=false):void {
 				setPenActive(id);
 
-				if (new Date().time - timeOfLastPenUp > 4000) { // 4 secs have passed
+				if (newSegment || inkWell.numStrokes == 3) {
 					if (inkWell != null) {
 						inkContainer.removeChild(inkWell);
 					}
 					inkWell = new Ink();
+	   				inkWell.x = inkStrokeCanvas.width/4;
+	   				inkWell.y = inkStrokeCanvas.height/4;
 	   				inkContainer.addChild(inkWell);
 				}
 
 				// start up a new stroke
    				currInkStroke = new InkStroke();
-   				currInkStroke.x = inkStrokeCanvas.width/4;
-   				currInkStroke.y = inkStrokeCanvas.height/4;
    				currInkStroke.inkWidth = 2;
 			}
 			public function penUp(id:int, x:String, y:String):InkStroke {
 				setPenNotActive(id);
 				currInkStroke.rerenderWithCurves();
-				timeOfLastPenUp = new Date().time;
 
 				// add it once we have added all the samples
    				inkWell.addStroke(currInkStroke);
@@ -71,11 +69,14 @@
 				var sY:Number = inkStrokeCanvas.height/(inkWell.maxY - inkWell.minY);
 				var minScale:Number = Math.min(sX, sY);
 								
-				if (sX < 1) { // do not scale up
+				if (minScale < 1) { // do not scale up
 					inkWell.scaleX = minScale;
 					inkWell.scaleY = minScale;				
 				}
 				
+				inkWell.recenterTheCenter(new Rectangle(0, 0, inkStrokeCanvas.width, inkStrokeCanvas.height));
+				totalNumStrokesCaptured++;
+				totalNumStrokes.text = totalNumStrokesCaptured + " total strokes";
 				return currInkStroke; // we should have a clone method...
 			}
 			public function penSample(id:int, xStr:String, yStr:String):void {
@@ -220,7 +221,7 @@
 			</mx:VBox>
 			<mx:VBox width="100%" height="100%" horizontalAlign="left" verticalGap="0">
 				<mx:HBox width="100%">
-					<mx:Text styleName="detailsText" id="numStrokesInCurrentState" text="12 strokes"/>
+					<mx:Text styleName="detailsText" id="totalNumStrokes" text="0 strokes"/>
 					<mx:Spacer width="70%"/>
 					<mx:Text styleName="detailsText" id="currentDuration" text="10 seconds"/>
 				</mx:HBox>

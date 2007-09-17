@@ -27,7 +27,6 @@
 				shelfContainer.visible = true;
 				halfWindowHeight = height/2;
 
-				sc.addPageState();
 				stage.addEventListener(Event.RESIZE, resizeHandler);
 			}
 
@@ -81,7 +80,7 @@
 
 	<!-- The Timeline //-->
 	<mx:HBox width="50%" right="0" top="5">
-		<mx:Spacer width="25%"/>
+		<mx:Spacer width="26%"/>
 		<mx:Label text="Time:" fontSize="15"/>
 		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
 			maximum="{shelf.numItems-1}" snapInterval="1" width="30%" 
@@ -90,11 +89,12 @@
 		<mx:Spacer width="45%"/>		
 	</mx:HBox>
 
-	<mx:VBox top="10" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false" horizontalAlign="center">
+	<mx:VBox top="8" id="shelfContainer" horizontalCenter="0" width="100%" visible="false" focusEnabled="false" horizontalAlign="center"
+		verticalGap="4">
 		<components:DisplayShelf id="shelf" borderThickness="1" focusEnabled="false"
 			borderColor="#AAAAAA" enableHistory="false" width="100%" height="{halfWindowHeight}" 
 			numItems="1" gap="{halfWindowHeight/2.3}" effectEnd="displayShelfStopped()"/>
-		<mx:Canvas backgroundColor="0x565656" borderStyle="solid" borderColor="0x444444" backgroundAlpha="0.35" width="99.5%" cornerRadius="5">
+		<mx:Canvas backgroundColor="0x565656" borderStyle="solid" borderColor="0x444444" backgroundAlpha="0.35" width="100%">
 			<mx:HBox verticalAlign="middle" paddingLeft="5">
 				<mx:Text width="55">
 					<mx:text>
