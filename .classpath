@@ -25,5 +25,8 @@
 	<classpathentry kind="lib" path="lib/gdata-youtube-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/gdata-youtube-meta-1.0.jar"/>
 	<classpathentry kind="lib" path="lib/mail-1.4.jar"/>
+	<classpathentry kind="lib" path="/PaperToolkit/lib/xstream/xpp3-1.1.3.4.O.jar"/>
+	<classpathentry kind="lib" path="/PaperToolkit/lib/xstream/xstream-1.1.3.jar"/>
+	<classpathentry kind="lib" path="/PaperToolkit/lib/comm/comm.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

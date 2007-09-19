@@ -42,12 +42,6 @@
       </editor>
    </extension>
 
-
-
-
-
-
-
    <extension
          point="org.eclipse.ui.handlers">
       <handler

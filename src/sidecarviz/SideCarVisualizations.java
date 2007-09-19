@@ -1,8 +1,22 @@
 package sidecarviz;
 
 import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.ide.IDE;
+
+import com.thoughtworks.xstream.XStream;
+
+import papertoolkit.PaperToolkit;
 import papertoolkit.util.DebugUtils;
 import sidecarviz.core.SideCarClient;
 import sidecarviz.core.SideCarPen;
@@ -42,8 +56,8 @@ public class SideCarVisualizations {
 	}
 
 	/**
-	 * Connects to Firefox over port 54321, and listens for information!
-	 * The message handlers happen to be stored in sideCarServer....
+	 * Connects to Firefox over port 54321, and listens for information! The message handlers happen to be
+	 * stored in sideCarServer....
 	 */
 	private SideCarClient sideCarClientForFirefoxBrowser;
 	private SideCarServer sideCarServer;
@@ -54,6 +68,10 @@ public class SideCarVisualizations {
 	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
 	private SideCarPen sideCarPen;
 	private static int uniqueFileHandle = 0;
+
+	// because it's a research prototype...
+	// this is also done in PaperToolkit, as a fallback for the eclipse plugin... :(
+	private static final String SIDECAR_PATH = "C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz";
 
 	/**
 	 * 1) Start Firefox: The Firefox Server should start before this.<br>
@@ -68,10 +86,26 @@ public class SideCarVisualizations {
 	 * <br>
 	 * TODO: SideCar Flash should be accessible even if the program is not running! =\ Right now, you have to
 	 * run your program first. That is, we should switch up #s 3 and 4 in the steps above...
+	 * 
+	 * TODO: win32com.dll should be installed in your system path, because eclipse won't be able to find it!
+	 * daaargh!
 	 */
 	private SideCarVisualizations() {
-		DebugUtils.println("Initializing SideCar...");
+		// DebugUtils.println("Initializing SideCar...");
 
+		// currently, we set PaperToolkit's directory statically
+		// TODO: we should use a configuration file or an eclipse preference
+
+		// When running as a plugin, our rundir starts out a C:\Program Files\eclipse\ =\
+		// How can we navigate back to the SideCar directory? (and more importantly, the PaperToolkit one?)
+		// For now, use constant
+
+		// see if XStream and DebugUtils are accessible here...
+		XStream stream = new XStream();
+		String xml = stream.toXML(new String("Bob"));
+		DebugUtils.println(xml);
+		
+		
 		// start a server here... (43210)
 		sideCarServer = new SideCarServer(this);
 
@@ -143,6 +177,7 @@ public class SideCarVisualizations {
 
 	/**
 	 * Forward information to Flash!
+	 * 
 	 * @param message
 	 */
 	public void sendToFlashGUI(String message) {
