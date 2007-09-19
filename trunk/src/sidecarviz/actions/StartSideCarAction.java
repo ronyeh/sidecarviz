@@ -50,10 +50,11 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 	}
 
 	/**
-	 * The green Saturn button is pressed. This button should load the Flex GUI for Sidecar... during development.
+	 * The green Saturn button is pressed. This button should load the Flex GUI for Sidecar... during
+	 * development.
 	 */
 	public void run(IAction action) {
-		
+
 		// Now that the browser is open... we should close down our monitoring, and start over
 		// this is key, since eclipse probably should stay running....
 		SideCarVisualizations.getInstance().stop();
@@ -111,8 +112,8 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 		String filepath = "C:/Documents and Settings/Ron Yeh/My Documents/Projects-EclipsePlugin"
 				+ "/TestApplication/src/edu/stanford/hci/TestApp.java";
 
-		IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(filepath));
 		try {
+			IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(filepath));
 			IEditorPart editor = IDE.openEditorOnFileStore(PlatformUI.getWorkbench()
 					.getActiveWorkbenchWindow().getActivePage(), fileStore);
 		} catch (PartInitException e) {
