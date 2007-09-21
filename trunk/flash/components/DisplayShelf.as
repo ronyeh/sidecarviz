@@ -58,9 +58,6 @@ package components {
         // our array of children.  These are the TiltingTiles that we'll generate, one for each item in the dataProvider.
         private var _children:Array = [];
 
-
-
-        
         // the tilt angle for the non-selected children. This can be set by the developer.
         private var _angle:Number = 5;
 
@@ -72,26 +69,17 @@ package components {
         // value, we can make sure that when we draw we're always drawing the 'current' index as it animates towards the selected index.
         private var _currentPosition:Number = 0;
         
-        
         // a map that allows us to use an itemRenderer (actually, a tiltingTile) as a key to map back to the index of the it represents. We'll use this when
         // the user clicks on one of the tilting tiles to decide what our new selected index is.  We _could_ just iterate over our children list to 
         // find the index on click, but there are lots of use cases where you need to store extra data about an itemRenderer that can't be easily looked up.
         // in those cases, Dictionaries are really useful tools. So we'll use one here just as a demonstration.
         private var _itemIndexMap:Dictionary = new Dictionary(true);
 
-
-        // a flag to control whether we want to automatically enable history management when the selected index changes.  This way the component
-        // can be used in scenarios where it doesn't represent a 'location' to the user.
-        private var _enableHistory:Boolean = false;
         // these are structures we'll need temporarily when calculating layout. Rather than allocating them again and again on update, we'll just allocate them
         // once and hold on to them.
         private var lCP:ChildPosition = new ChildPosition();
         private var rCP:ChildPosition = new ChildPosition();
-        // the selected index, clamped to the range defined by the dataProvider. We store this separate from the actual selected index as assigned by the developer.
-        // we want to calculate it only once and then store it off. But if we stored it back into our selected index property, we'd need to worry about scenarios where
-        // the selectedIndex gets assigned before the dataprovider does. So we store it in a separate variable, so as not to trample the 'true' selected index.
-        private var _safeSelectedIndex:Number;
-
+        
         // the effect we'll use to animate from old to new selected index.  If the user changes selected index in the middle of an animation, we'll want to cancel
         // the old one, so we keep a reference to it.
 		private var _animation:AnimateProperty;
@@ -101,7 +89,6 @@ package components {
 		// build an alternate UI gesture. In this case, by default we select an item on click, we allow the developer to turn that off, and we allow the developer to
 		// set the selectedIndex programmatically so they can select on, say mouse over.         
 		private var _selectOnClick:Boolean = true;
-		
 		
 		private var nItems:int = 0;
 		
@@ -164,7 +151,6 @@ package components {
         //---------------------------------------------------------------------------------------
         // constructor
         //---------------------------------------------------------------------------------------
-
         public function DisplayShelf() {
             super();
         }
@@ -173,46 +159,30 @@ package components {
         //---------------------------------------------------------------------------------------
         // public properties
         //---------------------------------------------------------------------------------------
-
-        /*  True if the developer wants us to automatically save changes to the selectedIndex in the history manager or not.
-        */
-        public function set enableHistory(value:Boolean):void
-        {
-            _enableHistory = value;            
-        }
-        public function get enableHistory():Boolean
-        {
-            return _enableHistory;
-        }
-        
-
         /*  How far out the selected item should 'pop' from the background items.  A value of 0 doesn't pop it out at all, while a value of 1 will receed
         *    the background items infinitely to the horizon.   Basically, the value is inverted and used as a scale factor for the background items.
         *    pick something appropriate.
         *    FWIW, now that I look at this, it really should be a style, not a property
         */        
-        [Bindable] public function set popout(value:Number):void
-        {
+        [Bindable] public function set popout(value:Number):void {
             _popout = value;
             /*     Being a good flex component, we don't want to recalculate every time someone changes this value. Instead, we store the change,
             *     and invalidate so we'll get to redrew the next time the screen is going to be updated.
             */
             invalidateDisplayList();
         }
-        public function get popout():Number
-        {
+        public function get popout():Number {
             return _popout;
         }
         
-        /*    the index of the currently selected item in the dataProvider.  Note that since this component animates its position, this is not necessarily the
+        /*   the index of the currently selected item in the dataProvider.  Note that since this component animates its position, this is not necessarily the
         *    same as the item we are currently looking at. We might be in the middle of animating towards the selected item.
         *    note that since we are going to dispatch a well defined, named event when this value changes, we specify that 
         *    event in the binding metadata. That let's flex know that we're going to be reponsible for dispatching the event ourselves.
         *    Otherwise the binding metadata would result in _another_ event being dispatched, which would be wasteful.
         */
         [Bindable("change")]
-        public function set selectedIndex(value:Number):void
-        {
+        public function set selectedIndex(value:Number):void {
             // save time and performancing by doing nothing if the selected index is already the new value.
             if(_selectedIndex == value)
                 return;
@@ -220,13 +190,9 @@ package components {
             // store off the new value.
             _selectedIndex = value;
             
-            // since we are going to use this value to index into the item renderers, we want to make sure we don't use a value outside the range of
-            // existing renderers. Rather than having to litter our code with those checks all over the place, we'll clamp it to the legal range once now 
-            // and store off the 'safe' value.
-            _safeSelectedIndex = Math.max(0,Math.min(_selectedIndex,_children.length-1));
-
             // dispatch an event letting listeners know that 
             dispatchEvent(new Event("change"));            
+
             // when the selected index changes, we'll want to kick-start our animation.
             startAnimation();
         }
@@ -235,16 +201,11 @@ package components {
             return _selectedIndex;
         }
 
-
-
-
 		public function refresh():void {
             invalidateDisplayList();
             invalidateProperties();
             invalidateSize();
 		}
-
-		
         
         [Bindable]
         public function set numItems(n:int):void {
@@ -271,12 +232,10 @@ package components {
          *    build an alternate UI gesture. In this case, by default we select an item on click, we allow the developer to turn that off, and we allow the developer to
          *    set the selectedIndex programmatically so they can select on, say mouse over.         
         */
-        public function set selectOnClick(value:Boolean):void
-        {
+        public function set selectOnClick(value:Boolean):void {
             _selectOnClick = value;        
         }
-        public function get selectOnClick():Boolean
-        {
+        public function get selectOnClick():Boolean {
             return _selectOnClick;
         }
         
@@ -291,11 +250,6 @@ package components {
         *    order in which commitProperties is called from component to component (i.e., it's not parent before child or vice versa).
         */
         override protected function commitProperties():void {
-            /*     since the size of our dataProvider might have just changed, we'll revalidate our selected index to make sure it's 
-            *    a valid index into the data.
-            */
-            _safeSelectedIndex = Math.max(0,Math.min(_selectedIndex,_children.length-1));
-            
             /*    since we've just recalculated our state, chances are pretty good we need to re-render ourselves now.
             */
             invalidateDisplayList();
@@ -485,8 +439,7 @@ package components {
             var adjacent:TiltingPane;
             var a:Number = _angle;
 
-            if(i == sel)
-            {
+            if(i == sel) {
                 /*    if the item we're calculating the position for _is_ the selected item,
                 *    then we know exactly where it goes...smack dab in the middle, at full size, full scale,
                 *    with an angle of 0.
@@ -497,8 +450,7 @@ package components {
                 c.y = unscaledHeight/2 - t.getExplicitOrMeasuredHeight()/2;
                 c.angle = 0;
             }
-            else if (i < sel)
-            {
+            else if (i < sel) {
                 /*     otherwise, if it's to the left of the selected item,
                 *    we want to scale it down to make it look like it's receding into the background...
                 */
@@ -575,17 +527,14 @@ package components {
         //---------------------------------------------------------------------------------------
         // Keyboard Management
         //---------------------------------------------------------------------------------------
-
-        /*    this event handler is where we respond to key presses when we have focus. Note that this event handler
+        /*   this event handler is where we respond to key presses when we have focus. Note that this event handler
         *    is already defined by the UIComponent base class...so we didn't have to add it anywhere. Instead, by 
         *    simply implementing the marker interface IFocusManagerComponent, and overriding this method, we get to
         *    handler key down events.
         */
-        override protected function keyDownHandler(event:KeyboardEvent):void
-        {
+        override protected function keyDownHandler(event:KeyboardEvent):void {
             super.keyDownHandler(event);
-            switch(event.keyCode)
-            {
+            switch(event.keyCode) {
                 case Keyboard.LEFT:
                     selectedIndex = Math.max(0,selectedIndex-1);
                     event.stopPropagation();
@@ -594,28 +543,28 @@ package components {
                     selectedIndex = Math.min(numItems-1,selectedIndex+1);
                     event.stopPropagation();
                     break;                    
+                case Keyboard.HOME:
+                	selectedIndex = 0;
+                	event.stopPropagation();
+                	break;
             }
         }
 
         //---------------------------------------------------------------------------------------
         // animation
         //---------------------------------------------------------------------------------------
-        
-        /* This is where we do our animation.  This function is called whenever the selected index changes.
-        */
-        private function startAnimation():void
-        {
-            /*     when you add animation to a component, you need to decide what will happen if two animations 
+        /* This is where we do our animation.  This function is called whenever the selected index changes. */
+        private function startAnimation():void {
+            /*   when you add animation to a component, you need to decide what will happen if two animations 
             *    try to fire at once. What happens, in this case, if the user sets the selected index while we're 
             *    still animating towards a previous selected index?
             *    Our decision here is to finish the previous animation (i.e., jump directly to the end of the animation).
             */
-            if(_animation != null && _animation.isPlaying)
-            {
+            if(_animation != null && _animation.isPlaying) {
                 _animation.end();
             }
                 
-            /*     our animation is simple. Since our component tracks 'selectedIndex' and 'currentPosition' as separate concepts,
+            /*   our animation is simple. Since our component tracks 'selectedIndex' and 'currentPosition' as separate concepts,
             *    animating is just a question of tweening the currentPosition variable to the selectedIndex value.
             *    every time the animation updates currentPosition, our component will invalidate and redraw. Easy as pie.
             */
@@ -623,58 +572,18 @@ package components {
             _animation.property = "currentPosition";
             _animation.toValue = _selectedIndex;
             _animation.target = this;
-            /*     if we picked a fixed duration, we'd have to deal with the fact that sometimes we're only moving a single position,
+            /*   if we picked a fixed duration, we'd have to deal with the fact that sometimes we're only moving a single position,
             *    and sometimes we may be moving a thousand.  Either short distances would be way too slow, or long distances would go 
             *    way to fast and look bad.  Instead, we'll calculate a duration based on how far we're animating.  We also put in a minimum animation
             *    so short distances don't go too quickly. We probably should also putting a cap so even in large data sets animations don't take too long.
             *    We could tweak this endlessly.
             */
-            _animation.duration = Math.max(400,Math.abs(_selectedIndex - _currentPosition) * 200);
+            _animation.duration = Math.max(400, Math.abs(_selectedIndex - _currentPosition) * 150);
             _animation.easingFunction = mx.effects.easing.Quadratic.easeOut;
             _animation.play();
         }
 
 
-        //---------------------------------------------------------------------------------------
-        // history managmeent
-        //---------------------------------------------------------------------------------------
-        
-        /*     These are the two methods a component needs to implement in order to save state with the history manager.
-        *    in our constructor, we registered ourselves as a history enabled component with the history manager. Once that 
-        *    happens, any time someone tries to save a state in the history, the manager will call this function to let our 
-        *    component store off whatever values it needs to capture its current state
-        */
-        public function saveState():Object
-        {
-            if(_enableHistory == false)
-                return {};
-            /* all we really need to store is our selected index. */
-            var index:int = _safeSelectedIndex == -1 ? 0 : _safeSelectedIndex;
-            return { selectedIndex: index };
-        }
-
-        /*    this function, in turn, gets called whenever someone tries to navigate (back or forth) to a stored state.
-        *    this funciton gives us a chance to read out our stored state and react accordingly.
-        */        
-        public function loadState(state:Object):void {
-            if(_enableHistory == false)
-                return;
-        
-            var newIndex:int = state ? int(state.selectedIndex) : 0;
-            if (newIndex == -1)
-                newIndex = 0;
-            if (newIndex != _safeSelectedIndex)
-            {
-                // When loading a new state, we don't want to
-                // save our current state in the history stack.
-                var eh:Boolean = _enableHistory;
-                _enableHistory = false;
-                selectedIndex = newIndex;
-                _enableHistory = eh;
-            }
-        }
-
-        
 		// the index of the item currently positioned in the middle (it might not be the one we selected, as we
 		// are still animating toward _selectedIndex
         public function set currentPosition(value:Number):void {
