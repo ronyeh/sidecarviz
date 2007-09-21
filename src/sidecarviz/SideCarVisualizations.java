@@ -1,22 +1,9 @@
 package sidecarviz;
 
 import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashMap;
 
-import org.eclipse.core.filesystem.EFS;
-import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.Path;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.ide.IDE;
-
-import com.thoughtworks.xstream.XStream;
-
-import papertoolkit.PaperToolkit;
+import papertoolkit.application.config.Configuration;
 import papertoolkit.util.DebugUtils;
 import sidecarviz.core.SideCarClient;
 import sidecarviz.core.SideCarPen;
@@ -38,14 +25,19 @@ import sidecarviz.core.ToolkitListener;
 public class SideCarVisualizations {
 
 	private static SideCarVisualizations instance;
+	private static final boolean OPEN_FLASH_GUI = false;
 
+	// because it's a research prototype...
+	// this is also done in PaperToolkit, as a fallback for the eclipse plugin... :(
+	private static final String SIDECAR_PATH = "C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz";
+
+	private static int uniqueFileHandle = 0;
 	public static synchronized SideCarVisualizations getInstance() {
 		if (instance == null) {
 			instance = new SideCarVisualizations();
 		}
 		return instance;
 	}
-
 	/**
 	 * For testing SideCar separate from the Eclipse Application.
 	 * 
@@ -54,24 +46,18 @@ public class SideCarVisualizations {
 	public static void main(String[] args) {
 		new SideCarVisualizations();
 	}
-
+	
+	private HashMap<Integer, String> fileIDToPath = new HashMap<Integer, String>();
+	private String lastFileAbsolutePath = "";
+	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
 	/**
 	 * Connects to Firefox over port 54321, and listens for information! The message handlers happen to be
 	 * stored in sideCarServer....
 	 */
 	private SideCarClient sideCarClientForFirefoxBrowser;
+	private SideCarPen sideCarPen;
 	private SideCarServer sideCarServer;
 	private ToolkitListener toolkitListener;
-	private String lastFileAbsolutePath = "";
-
-	private HashMap<Integer, String> fileIDToPath = new HashMap<Integer, String>();
-	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
-	private SideCarPen sideCarPen;
-	private static int uniqueFileHandle = 0;
-
-	// because it's a research prototype...
-	// this is also done in PaperToolkit, as a fallback for the eclipse plugin... :(
-	private static final String SIDECAR_PATH = "C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz";
 
 	/**
 	 * 1) Start Firefox: The Firefox Server should start before this.<br>
@@ -91,8 +77,9 @@ public class SideCarVisualizations {
 	 * daaargh!
 	 */
 	private SideCarVisualizations() {
-		// DebugUtils.println("Initializing SideCar...");
-
+		Configuration.setPropertyValue(Configuration.Keys.TOOLKIT_ICON_PATH.toString(), "icons/planet.png");
+		Configuration.setPropertyValue(Configuration.Keys.TOOLKIT_ICON_TITLE.toString(), "SideCar Visualizations");
+		
 		// currently, we set PaperToolkit's directory statically
 		// TODO: we should use a configuration file or an eclipse preference
 
@@ -100,12 +87,6 @@ public class SideCarVisualizations {
 		// How can we navigate back to the SideCar directory? (and more importantly, the PaperToolkit one?)
 		// For now, use constant
 
-		// see if XStream and DebugUtils are accessible here...
-		XStream stream = new XStream();
-		String xml = stream.toXML(new String("Bob"));
-		DebugUtils.println(xml);
-		
-		
 		// start a server here... (43210)
 		sideCarServer = new SideCarServer(this);
 
@@ -121,7 +102,9 @@ public class SideCarVisualizations {
 
 		// will force firefox to open... and start its server at 54321
 		// the flash GUI will connect to us at 43210
-		sideCarServer.openFlashGUI();
+		if (OPEN_FLASH_GUI) {
+			sideCarServer.openFlashGUI();
+		}
 
 		// The green button opens firefox (which starts its own server at 54321)
 		// loads the flex application, which connects to the sidecar server at 43210
