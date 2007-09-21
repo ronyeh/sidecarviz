@@ -24,6 +24,7 @@ public class TestApp0 {
 		region.addEventHandler(new ClickAdapter() {
 			public void clicked(PenEvent e) {
 				DebugUtils.println("Clicked at " + e);
+				System.out.println("A Click Happened!");
 			}
 		});
 		Region inkRegion = genericPage.createRegion(5, 5, 5, 5);

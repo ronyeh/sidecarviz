@@ -122,9 +122,9 @@
 	<!-- The Println Data Goes Here... //-->
 	<mx:AdvancedDataGrid id="printlnGrid" color="#000000" height="43%" bottom="0" left="0" right="0" focusEnabled="false" fontSize="12">
 		<mx:columns>
-			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="150"/>
-			<mx:AdvancedDataGridColumn headerText="Component/Device" dataField="Class" width="160"/>
-			<mx:AdvancedDataGridColumn headerText="Handler/Action" dataField="Handler" width="160"/>
+			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="100"/>
+			<mx:AdvancedDataGridColumn headerText="Component/Device" dataField="Class" width="200"/>
+			<mx:AdvancedDataGridColumn headerText="Handler/Action" dataField="Handler" width="200"/>
 			<mx:AdvancedDataGridColumn headerText="Information" dataField="PrintlnContents"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>

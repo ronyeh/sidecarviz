@@ -83,13 +83,15 @@ package tools {
 		// handle messages
 		// this is the core of SideCar, as we pass this data into the GUI...
         private function msgListener(event:DataEvent):void {
+        	// trace(event.text);
+        	
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
             var searchQuery:String = "";
             // trace("Incoming Message: " + msg.toXMLString());
             switch(msgName) {
             	case "eventHandler":
-            		addSystemOutputData(msg.@time, msg.@component, msg.@handlerName, "");
+            		addSystemOutputData(msg.@component, msg.@handlerName, "", msg.@time);
 	            	break;
 	            case "googleSearch":
 					searchQuery = unescape(msg.@searchQuery);
@@ -131,6 +133,10 @@ package tools {
 				case "penSample":
 					gui.systemInternals.penSample(parseInt(msg.@penID), msg.@x, msg.@y);
 					break;
+				case "debugOutput":
+					trace("DebugOutput: " + msg.@value + " at " + msg.@location);
+					addSystemOutputData(msg.@location, "Event", msg.@value);
+					break;
             	default:
 		            trace("Unhandled: " + msg.toXMLString());
     	        	break;
@@ -142,10 +148,13 @@ package tools {
 		}
 
 		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
-		public function addSystemOutputData(time:String, where:String, event:String, info:String):void {
+		private function addSystemOutputData(where:String, event:String, info:String, time:String=null):void {
 			// convert time into a readable string...
 			var date:Date = new Date();
-			date.time = parseInt(time);
+			if (time != null) {
+				date.time = parseInt(time);
+			}
+			
 			// trace(date + " " + where + " " + event + " " + info);
 			lastItem = {Time:date.toTimeString(), Class:where, Handler:event, PrintlnContents:info};
 			printlnData.addItem(lastItem);

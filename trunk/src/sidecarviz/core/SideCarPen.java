@@ -5,13 +5,26 @@ import papertoolkit.pen.PenSample;
 import papertoolkit.pen.streaming.listeners.PenListener;
 import sidecarviz.SideCarVisualizations;
 
+/**
+ * <p>
+ * </p>
+ * <p>
+ * <span class="BSDLicense"> This software is distributed under the <a
+ * href="http://hci.stanford.edu/research/copyright.txt">BSD License</a>. </span>
+ * </p>
+ * 
+ * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
+ */
 public class SideCarPen {
 
-	private Pen pen;
-	private SideCarVisualizations scv;
 	private String id;
+	private Pen pen;
 	private String penIDAttribute;
+	private SideCarVisualizations scv;
 
+	/**
+	 * @param sideCarVisualizations
+	 */
 	public SideCarPen(SideCarVisualizations sideCarVisualizations) {
 		scv = sideCarVisualizations;
 		pen = new Pen();
@@ -22,17 +35,8 @@ public class SideCarPen {
 	}
 
 	/**
-	 * Can only be called once... Releases resources.
+	 * @return
 	 */
-	public void stop() {
-		pen.stopLiveMode();
-		pen = null;
-	}
-
-	private String getLocationAttribute(PenSample sample) {
-		return " x=\"" + sample.x + "\" y=\"" + sample.y + "\" ";
-	}
-
 	private PenListener getListener() {
 		return new PenListener() {
 			public void penDown(PenSample sample) {
@@ -49,5 +53,21 @@ public class SideCarPen {
 				scv.sendToFlashGUI("<penSample" + penIDAttribute + getLocationAttribute(sample) + "/>");
 			}
 		};
+	}
+
+	/**
+	 * @param sample
+	 * @return
+	 */
+	private String getLocationAttribute(PenSample sample) {
+		return " x=\"" + sample.x + "\" y=\"" + sample.y + "\" ";
+	}
+
+	/**
+	 * Can only be called once... Releases resources.
+	 */
+	public void stop() {
+		pen.stopLiveMode();
+		pen = null;
 	}
 }
