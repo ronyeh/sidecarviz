@@ -8,7 +8,7 @@ import papertoolkit.util.DebugUtils;
 import sidecarviz.core.SideCarClient;
 import sidecarviz.core.SideCarPen;
 import sidecarviz.core.SideCarServer;
-import sidecarviz.core.ToolkitListener;
+import sidecarviz.core.MonitorToolkit;
 
 /**
  * <p>
@@ -57,7 +57,7 @@ public class SideCarVisualizations {
 	private SideCarClient sideCarClientForFirefoxBrowser;
 	private SideCarPen sideCarPen;
 	private SideCarServer sideCarServer;
-	private ToolkitListener toolkitListener;
+	private MonitorToolkit toolkitListener;
 
 	/**
 	 * 1) Start Firefox: The Firefox Server should start before this.<br>
@@ -145,7 +145,7 @@ public class SideCarVisualizations {
 	 * Listens for info from PaperToolkit.
 	 */
 	public void connectToTheToolkit() {
-		toolkitListener = new ToolkitListener(this);
+		toolkitListener = new MonitorToolkit(this);
 	}
 
 	/**

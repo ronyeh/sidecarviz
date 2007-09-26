@@ -14,6 +14,7 @@ import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.IWorkbenchWindowActionDelegate;
@@ -24,6 +25,7 @@ import org.eclipse.ui.ide.IDE;
 
 import papertoolkit.util.DebugUtils;
 import sidecarviz.SideCarVisualizations;
+import sidecarviz.core.MonitorEclipse;
 
 /**
  * <p>
@@ -128,16 +130,10 @@ public class StartSideCarAction implements IWorkbenchWindowActionDelegate {
 	 *      org.eclipse.jface.viewers.ISelection)
 	 */
 	public void selectionChanged(IAction action, ISelection selection) {
-		DebugUtils.println("SelectionChanged: " + action + " / " + selection);
-
-		// if (selection == null) { // never null, apparently
-		// return;
-		// }
-
-		// always points to this instance...
-		// DebugUtils.println(action.getId());
-
-		// figure out where the cursor is...
+		if (!(selection instanceof TreeSelection)) {
+			return;
+		}
+		MonitorEclipse.getInstance().gotPackageExplorerSelectionChanged((TreeSelection)selection);
 	}
 
 }

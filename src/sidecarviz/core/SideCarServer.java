@@ -38,7 +38,13 @@ public class SideCarServer {
 		// DebugUtils.println("Server Started");
 	}
 
+	/**
+	 * 
+	 */
 	private void addSupportedCommands() {
+		
+		// Commands that start with SC:: come from Firefox
+		
 		// takes one argument, the URL
 		server.addCommand("SC::ClipboardContentsChanged", new ExternalCommand() {
 			// url
