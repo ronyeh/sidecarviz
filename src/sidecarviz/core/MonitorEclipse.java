@@ -55,6 +55,7 @@ public class MonitorEclipse {
 	private HashMap<String, CompilationUnit> packageExplorerSelectedClasses = new HashMap<String, CompilationUnit>();
 	private HashMap<String, PackageFragment> packageExplorerSelectedPackages = new HashMap<String, PackageFragment>();
 	private SourceMethod lastMethodEdited;
+	private java.io.File lastFileOpened;
 
 	/**
 	 * Opens an Eclipse Editor on a Compilation Unit, if it exists in our HashMap.
@@ -147,8 +148,11 @@ public class MonitorEclipse {
 	}
 
 	public void gotOpenedFileInEditor(java.io.File file) {
-		DebugUtils.println("Opened File: " + file);
-		// SideCarVisualizations.getInstance().changedEditorTo();
+		if (!file.equals(lastFileOpened)) {
+			DebugUtils.println("Opened File: " + file);
+		}
+		lastFileOpened = file;
+		SideCarVisualizations.getInstance().changedEditorTo(file);
 	}
 
 	/**
