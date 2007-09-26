@@ -13,11 +13,11 @@ public class ActionBarContributor extends TextEditorActionContributor {
 
 	private ITextEditor textEditor;
 
-	public void init(IActionBars bars, IWorkbenchPage page) {
-		super.init(bars, page);
+	public void dispose() {
 	}
 
-	public void dispose() {
+	public void init(IActionBars bars, IWorkbenchPage page) {
+		super.init(bars, page);
 	}
 
 	public void setActiveEditor(IEditorPart editor) {

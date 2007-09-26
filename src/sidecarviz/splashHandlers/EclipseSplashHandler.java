@@ -17,20 +17,9 @@ import org.eclipse.ui.splash.AbstractSplashHandler;
  * @since 3.3
  */
 public class EclipseSplashHandler extends AbstractSplashHandler {
-
-	/**
-	 * 
-	 */
 	public EclipseSplashHandler() {
-
+		// if necessary, do something while Eclipse is initializing...
 	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.eclipse.ui.internal.splash.AbstractSplashHandler#init(org.eclipse.swt.widgets.Shell,
-	 *      org.eclipse.ui.IWorkbench)
-	 */
 	public void init(final Shell splash) {
 		// Store the shell
 		super.init(splash);

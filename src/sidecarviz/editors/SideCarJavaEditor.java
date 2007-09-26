@@ -2,6 +2,8 @@ package sidecarviz.editors;
 
 import org.eclipse.jdt.core.IJavaElement;
 import org.eclipse.jdt.core.ISourceReference;
+import org.eclipse.jdt.internal.core.SourceMethod;
+import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jdt.internal.ui.javaeditor.ClipboardOperationAction;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitDocumentProvider;
 import org.eclipse.jdt.internal.ui.javaeditor.CompilationUnitEditor;
@@ -13,10 +15,10 @@ import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.IDocumentProvider;
 
 import papertoolkit.util.DebugUtils;
-import sidecarviz.SideCarVisualizations;
 import sidecarviz.actions.SideCarCopyAction;
 import sidecarviz.actions.SideCarCutAction;
 import sidecarviz.actions.SideCarPasteAction;
+import sidecarviz.core.MonitorEclipse;
 
 /**
  * <p>
@@ -78,9 +80,12 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		super.handleCursorPositionChanged();
 		// DebugUtils.println("Cursor Changed: " + getCursorPosition());
 		// This can be used to review/replay the interaction somehow??
+		MonitorEclipse.getInstance().gotCursorMovementInEditor(getCursorPosition());
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.StatusTextEditor#handleEditorInputChanged()
 	 */
 	protected void handleEditorInputChanged() {
@@ -88,7 +93,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		DebugUtils.println("");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.StatusTextEditor#handleElementContentReplaced()
 	 */
 	protected void handleElementContentReplaced() {
@@ -96,21 +103,27 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		DebugUtils.println("");
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#initializeEditor()
 	 */
 	protected void initializeEditor() {
 		super.initializeEditor();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#selectionChanged()
 	 */
 	protected void selectionChanged() {
 		super.selectionChanged();
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#setDocumentProvider(org.eclipse.ui.texteditor.IDocumentProvider)
 	 */
 	protected void setDocumentProvider(IDocumentProvider provider) {
@@ -118,21 +131,20 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		DebugUtils.println("Document Provider Set to: " + provider);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#setDocumentProvider(org.eclipse.ui.IEditorInput)
 	 */
 	protected void setDocumentProvider(IEditorInput input) {
 		super.setDocumentProvider(input);
 		if (input instanceof FileEditorInput) {
 			FileEditorInput fei = (FileEditorInput) input;
-			String absolutePath = fei.getFile().getLocation().toFile().getAbsolutePath();
-			DebugUtils.println("Opened: " + absolutePath);
-			// TODO: Forward this on!
+			MonitorEclipse.getInstance().gotOpenedFileInEditor(fei.getFile().getLocation().toFile());
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#setFocus()
+	/**
 	 */
 	public void setFocus() {
 		super.setFocus();
@@ -147,9 +159,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 	 */
 	public void setSelection(IJavaElement element) {
 		super.setSelection(element);
-		DebugUtils.println("Selected: " + element.getElementName());
-
+		// DebugUtils.println("Selected: " + element.getElementName());
 		// TODO: Forward this on to the flash GUI
+		// I think we are already tracking this in StartSideCarAction.java
 	}
 
 	/**
@@ -158,17 +170,26 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#setSelection(org.eclipse.jdt.core.ISourceReference,
 	 *      boolean)
 	 */
-	protected void setSelection(ISourceReference reference, boolean moveCursor) {
-		super.setSelection(reference, moveCursor);
-		if (reference == null) {
+	protected void setSelection(ISourceReference sourceItem, boolean moveCursor) {
+		super.setSelection(sourceItem, moveCursor);
+		if (sourceItem == null) {
 			// selected nothing
 			return;
 		}
-		DebugUtils.println("SetSelection to: " + reference);
+
+		final Class<? extends ISourceReference> typeOfSelection = sourceItem.getClass();
+		if (typeOfSelection.equals(SourceType.class)) {
+			SourceType type = (SourceType) sourceItem;
+			MonitorEclipse.getInstance().gotEditingClass(this, type);
+		} else if (typeOfSelection.equals(SourceMethod.class)) {
+			SourceMethod method = (SourceMethod) sourceItem;
+			MonitorEclipse.getInstance().gotEditingMethod(this, method);
+		}
+		// DebugUtils.println("SetSelection to: " + reference + " " + typeOfSelection);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#updatedTitleImage(org.eclipse.swt.graphics.Image)
+	/**
+	 * Replace the image in the title bar with our sun.
 	 */
 	public void updatedTitleImage(Image image) {
 		if (tImage == null) {
@@ -178,13 +199,15 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		super.updatedTitleImage(tImage);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.texteditor.StatusTextEditor#updatePartControl(org.eclipse.ui.IEditorInput)
 	 */
 	public void updatePartControl(IEditorInput input) {
 		super.updatePartControl(input);
 		if (input instanceof FileEditorInput) {
-			SideCarVisualizations.getInstance().changedEditorTo(
+			MonitorEclipse.getInstance().gotOpenedFileInEditor(
 					((FileEditorInput) input).getPath().toFile().getAbsoluteFile());
 		}
 	}
