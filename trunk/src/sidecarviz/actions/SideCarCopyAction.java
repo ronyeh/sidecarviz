@@ -15,6 +15,7 @@ import org.eclipse.swt.events.HelpListener;
 import org.eclipse.swt.widgets.Event;
 
 import papertoolkit.util.DebugUtils;
+import sidecarviz.core.MonitorEclipse;
 import sidecarviz.handlers.CopyHandler;
 
 public class SideCarCopyAction implements IAction {
@@ -28,15 +29,14 @@ public class SideCarCopyAction implements IAction {
 	}
 
 	/**
-	 * 
+	 * Developer Copied some text...
 	 */
 	private void actionPerformed() {
 		java.awt.datatransfer.Clipboard systemClipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
 		Transferable contents = systemClipboard.getContents(null);
 		try {
-			String transferData = (String) contents.getTransferData(DataFlavor.stringFlavor);
-			DebugUtils.println("Copied: ");
-			System.out.println(transferData);
+			String copiedText = (String) contents.getTransferData(DataFlavor.stringFlavor);
+			MonitorEclipse.getInstance().gotTextCopiedFromEditor(copiedText);
 		} catch (UnsupportedFlavorException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

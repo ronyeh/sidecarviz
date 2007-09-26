@@ -12,6 +12,7 @@ import sidecarviz.SideCarVisualizations;
 
 /**
  * <p>
+ * Receives information broadcast from PaperToolkit, and forwards it on to the Flash GUI...
  * </p>
  * <p>
  * <span class="BSDLicense"> This software is distributed under the <a
@@ -20,18 +21,23 @@ import sidecarviz.SideCarVisualizations;
  * 
  * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
  */
-public class ToolkitListener {
+public class MonitorToolkit {
 
-	private SideCarVisualizations viz;
 	private Socket toolkitConnection;
+	private SideCarVisualizations viz;
 
-	public ToolkitListener(final SideCarVisualizations sideCarVisualizations) {
+	/**
+	 * @param sideCarVisualizations
+	 */
+	public MonitorToolkit(final SideCarVisualizations sideCarVisualizations) {
 		viz = sideCarVisualizations;
 		try {
 			toolkitConnection = new Socket("localhost", Ports.TOOLKIT_MONITORING);
-			final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(toolkitConnection.getInputStream()));
+			final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(toolkitConnection
+					.getInputStream()));
 			new Thread(new Runnable() {
 				private boolean done = false;
+
 				public void run() {
 					while (true) {
 						if (done) {
@@ -59,8 +65,7 @@ public class ToolkitListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
 
 }

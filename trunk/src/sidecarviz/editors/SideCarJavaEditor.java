@@ -18,24 +18,39 @@ import sidecarviz.actions.SideCarCopyAction;
 import sidecarviz.actions.SideCarCutAction;
 import sidecarviz.actions.SideCarPasteAction;
 
+/**
+ * <p>
+ * Customizes the Eclipse Java Editor...
+ * </p>
+ * <p>
+ * <span class="BSDLicense"> This software is distributed under the <a
+ * href="http://hci.stanford.edu/research/copyright.txt">BSD License</a>. </span>
+ * </p>
+ * 
+ * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
+ */
 public class SideCarJavaEditor extends CompilationUnitEditor {
 
 	private Image tImage;
 
+	/**
+	 * 
+	 */
 	public SideCarJavaEditor() {
 		// DebugUtils.println("SideCarEditor Initialized");
 		IDocumentProvider documentProvider = getDocumentProvider();
 		// DebugUtils.println(documentProvider);
 	}
 
+	/**
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#disposeDocumentProvider()
+	 */
 	protected void disposeDocumentProvider() {
 		DebugUtils.println("");
 		super.disposeDocumentProvider();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
+	/**
 	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#getAction(java.lang.String)
 	 */
 	public IAction getAction(String actionID) {
@@ -54,39 +69,58 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 	}
 
 	/**
-	 * Fired when the cursor moves...
-	 * The string is of the form LineNum : CharNum, where each starts from 1 (not 0)...
+	 * Fired when the cursor moves... The string is of the form LineNum : CharNum, where each starts from 1
+	 * (not 0)...
+	 * 
 	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#handleCursorPositionChanged()
 	 */
 	protected void handleCursorPositionChanged() {
 		super.handleCursorPositionChanged();
-		//DebugUtils.println("Cursor Changed: " + getCursorPosition());
+		// DebugUtils.println("Cursor Changed: " + getCursorPosition());
 		// This can be used to review/replay the interaction somehow??
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.StatusTextEditor#handleEditorInputChanged()
+	 */
 	protected void handleEditorInputChanged() {
 		super.handleEditorInputChanged();
 		DebugUtils.println("");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.StatusTextEditor#handleElementContentReplaced()
+	 */
 	protected void handleElementContentReplaced() {
 		super.handleElementContentReplaced();
 		DebugUtils.println("");
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#initializeEditor()
+	 */
 	protected void initializeEditor() {
 		super.initializeEditor();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#selectionChanged()
+	 */
 	protected void selectionChanged() {
 		super.selectionChanged();
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#setDocumentProvider(org.eclipse.ui.texteditor.IDocumentProvider)
+	 */
 	protected void setDocumentProvider(IDocumentProvider provider) {
 		super.setDocumentProvider(provider);
 		DebugUtils.println("Document Provider Set to: " + provider);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractDecoratedTextEditor#setDocumentProvider(org.eclipse.ui.IEditorInput)
+	 */
 	protected void setDocumentProvider(IEditorInput input) {
 		super.setDocumentProvider(input);
 		if (input instanceof FileEditorInput) {
@@ -97,6 +131,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.AbstractTextEditor#setFocus()
+	 */
 	public void setFocus() {
 		super.setFocus();
 		DebugUtils.println("Focus");
@@ -117,7 +154,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 
 	/**
 	 * This is fired when the person selects a method...or class.
-	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#setSelection(org.eclipse.jdt.core.ISourceReference, boolean)
+	 * 
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#setSelection(org.eclipse.jdt.core.ISourceReference,
+	 *      boolean)
 	 */
 	protected void setSelection(ISourceReference reference, boolean moveCursor) {
 		super.setSelection(reference, moveCursor);
@@ -128,6 +167,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		DebugUtils.println("SetSelection to: " + reference);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.jdt.internal.ui.javaeditor.JavaEditor#updatedTitleImage(org.eclipse.swt.graphics.Image)
+	 */
 	public void updatedTitleImage(Image image) {
 		if (tImage == null) {
 			tImage = new Image(image.getDevice(),
@@ -136,6 +178,9 @@ public class SideCarJavaEditor extends CompilationUnitEditor {
 		super.updatedTitleImage(tImage);
 	}
 
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.texteditor.StatusTextEditor#updatePartControl(org.eclipse.ui.IEditorInput)
+	 */
 	public void updatePartControl(IEditorInput input) {
 		super.updatePartControl(input);
 		if (input instanceof FileEditorInput) {

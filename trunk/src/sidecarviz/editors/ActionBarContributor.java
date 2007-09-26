@@ -7,7 +7,6 @@ import org.eclipse.ui.editors.text.TextEditorActionContributor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.texteditor.ITextEditor;
 
-import papertoolkit.PaperToolkit;
 import papertoolkit.util.DebugUtils;
 
 public class ActionBarContributor extends TextEditorActionContributor {
