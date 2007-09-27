@@ -4,15 +4,15 @@ package tools {
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
+	import ink.InkStroke;
+	
 	import java.JavaIntegration;
 	
 	import mx.collections.ArrayCollection;
-	import mx.events.MenuEvent;
-	import mx.controls.Alert;
+	
 	import states.Page;
 	import states.State;
 	import states.VisualFeedback;
-	import ink.InkStroke;
 	
 	// controls the main interaction
 	public class SideCarBackend {
@@ -20,15 +20,10 @@ package tools {
 		private var portNum:int;
 		private var javaBackend:JavaIntegration;
 		private var gui:SideCar;
-		private var scrollTimer:Timer;
-		private var lastItem:Object;
 		private var itemNumber:Number = 0;
 
 		private var playTimer:Timer = new Timer(450);
 		private var isPlaying:Boolean = false;
-
-		// the array storing the data for the lower pane
-		private var printlnData:ArrayCollection = new ArrayCollection();
 
 		// for segmenting interactions...
 		private var timeOfLastPenUp:Number = 0;
@@ -39,18 +34,7 @@ package tools {
 			// start the communication with Java
 			processParameters();
 			start();
-			gui.printlnGrid.dataProvider = printlnData;
-			scrollTimer = new Timer(200);
-			scrollTimer.addEventListener(TimerEvent.TIMER, makeLastItemVisible);
-
 			playTimer.addEventListener(TimerEvent.TIMER, playTimerHandler);
-		}
-
-		
-
-		public function makeLastItemVisible(e:TimerEvent=null):void {
-			scrollTimer.stop();
-			gui.printlnGrid.firstVisibleItem = lastItem;
 		}
 		
 		// retrieve parameters from the host HTML page
@@ -96,17 +80,26 @@ package tools {
 	            case "googleSearch":
 					searchQuery = unescape(msg.@searchQuery);
 	            	trace("Google Search: " + searchQuery);
-					gui.interactionHistory.addData("Web Search", searchQuery);
+					gui.interactionHistory.addData("Search", "Web", searchQuery);
 	            	break;	
 	            case "googleCodeSearch":
 					searchQuery = unescape(msg.@searchQuery);
 	            	trace("Code Search: " + searchQuery);
-					gui.interactionHistory.addData("Code Search", searchQuery);
+					gui.interactionHistory.addData("Search", "Code", searchQuery);
 	            	break;	
 	            case "browsedTo":
 	            	trace("Browsed To: " + msg.@url);
-					gui.interactionHistory.addData("Browsed To", msg.@url);
+					gui.interactionHistory.addData("Browse To", "Web", msg.@url);
 	            	break;	
+	            case "copiedFromEditor":
+					gui.interactionHistory.addData("Copy", "IDE", msg.@contents);
+		            break;
+	            case "cutFromEditor":
+					gui.interactionHistory.addData("Cut", "IDE", msg.@contents);
+		            break;
+	            case "pasteIntoEditor":
+					gui.interactionHistory.addData("Paste", "IDE", msg.@contents);
+		            break;
 				case "clipboardChanged":
 					// trace("Clipboard Changed on Website: " + msg.@url + " to value " + msg.@contents);
 					gui.interactionHistory.addData("Update Clipboard", msg.@url + " : " + msg.@contents);
@@ -149,17 +142,7 @@ package tools {
 
 		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
 		private function addSystemOutputData(where:String, event:String, info:String, time:String=null):void {
-			// convert time into a readable string...
-			var date:Date = new Date();
-			if (time != null) {
-				date.time = parseInt(time);
-			}
-			
-			// trace(date + " " + where + " " + event + " " + info);
-			lastItem = {Time:date.toTimeString(), Class:where, Handler:event, PrintlnContents:info};
-			printlnData.addItem(lastItem);
-			// set a timer to scroll to the bottom after a second
-			scrollTimer.start();
+			gui.interactionHistory.addData(event, where, info);
 		}
 
 		public function addSheet(sheetName:String):void {
@@ -225,13 +208,6 @@ package tools {
 			}
 		}
 		
-		public function toggleInteractionHistoryVisibility():void {
-			if (gui.interactionHistory.alpha > 0) {
-				gui.fOutHistory.play();
-			} else {
-				gui.fInHistory.play();
-			}
-		}
 
 		public function endFadeOutDetails():void {
 			gui.systemInternals.visible = false;
@@ -242,15 +218,6 @@ package tools {
 			gui.detailsButton.label = "Hide";
 		}
 
-		
-		public function endFadeOut():void {
-			gui.interactionHistory.visible = false;
-			gui.historyButton.label = "Show Interaction History";
-		}
-		public function startFadeIn():void {
-			gui.interactionHistory.visible = true;
-			gui.historyButton.label = "Hide";
-		}
 		
 		public function searchBoxFocusOut():void {
 			if (gui.searchBox.text == "") {

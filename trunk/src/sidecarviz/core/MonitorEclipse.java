@@ -5,14 +5,12 @@ import java.util.HashMap;
 import org.eclipse.core.internal.resources.File;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jdt.core.IOpenable;
 import org.eclipse.jdt.core.JavaModelException;
 import org.eclipse.jdt.internal.core.CompilationUnit;
 import org.eclipse.jdt.internal.core.PackageFragment;
 import org.eclipse.jdt.internal.core.SourceMethod;
 import org.eclipse.jdt.internal.core.SourceType;
 import org.eclipse.jface.viewers.TreeSelection;
-import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
@@ -28,6 +26,11 @@ import sidecarviz.editors.SideCarJavaEditor;
  * <p>
  * All information we get by instrumenting Eclipse is sent through this class, and forwarded to the Flash GUI.
  * If we need to ask Eclipse to do something, we also go through this class.
+ * 
+ * gotXXXX methods are called by Eclipse, and forwarded to Flash
+ * 
+ * doXXXX methods are called by anyone, and ask Eclipse to do something
+ * 
  * </p>
  * <p>
  * <span class="BSDLicense"> This software is distributed under the <a
@@ -36,9 +39,8 @@ import sidecarviz.editors.SideCarJavaEditor;
  * 
  * @author <a href="http://graphics.stanford.edu/~ronyeh">Ron B Yeh</a> (ronyeh(AT)cs.stanford.edu)
  */
+@SuppressWarnings("restriction")
 public class MonitorEclipse {
-	// gotXXXX methods are called by Eclipse, and forwarded to Flash
-	// doXXXX methods are called by anyone, and ask Eclipse to do something
 
 	private static MonitorEclipse instance;
 
@@ -49,13 +51,14 @@ public class MonitorEclipse {
 		return instance;
 	}
 
-	private HashMap<String, SourceMethod> javaEditorEditedMethods = new HashMap<String, SourceMethod>();
 	private HashMap<String, SourceType> javaEditorEditedClasses = new HashMap<String, SourceType>();
+	private HashMap<String, SourceMethod> javaEditorEditedMethods = new HashMap<String, SourceMethod>();
+
+	private java.io.File lastFileOpened;
+	private SourceMethod lastMethodEdited;
 
 	private HashMap<String, CompilationUnit> packageExplorerSelectedClasses = new HashMap<String, CompilationUnit>();
 	private HashMap<String, PackageFragment> packageExplorerSelectedPackages = new HashMap<String, PackageFragment>();
-	private SourceMethod lastMethodEdited;
-	private java.io.File lastFileOpened;
 
 	/**
 	 * Opens an Eclipse Editor on a Compilation Unit, if it exists in our HashMap.
@@ -69,43 +72,17 @@ public class MonitorEclipse {
 		}
 	}
 
-	private void openCompilationUnit(CompilationUnit compilationUnit) {
-		try {
-			IResource correspondingResource = compilationUnit.getCorrespondingResource();
-			if (correspondingResource instanceof org.eclipse.core.internal.resources.File) {
-				File eclipseFile = (File) correspondingResource;
-
-				IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-				if (workbenchWindow == null) {
-					// TODO: DO NOT DO THIS
-					// This opens another Eclipse Window...
-					// workbenchWindow = PlatformUI.getWorkbench().openWorkbenchWindow(null);
-					DebugUtils.println("Workbench Window is Null");
-					return;
-				}
-
-				IWorkbenchPage activePage = workbenchWindow.getActivePage();
-				if (activePage == null) {
-					DebugUtils.println("Active Page is Null");
-					try {
-						activePage = workbenchWindow.openPage(null);
-					} catch (WorkbenchException e) {
-						e.printStackTrace();
-					}
-				}
-				IDE.openEditor(activePage, eclipseFile);
-			}
-		} catch (JavaModelException e) {
-			e.printStackTrace();
-		} catch (PartInitException e) {
-			e.printStackTrace();
-		}
-	}
-
+	/**
+	 * @param cursorPosition
+	 */
 	public void gotCursorMovementInEditor(String cursorPosition) {
 		// DebugUtils.println("Moved To: " + cursorPosition);
 	}
 
+	/**
+	 * @param sideCarJavaEditor
+	 * @param type
+	 */
 	public void gotEditingClass(SideCarJavaEditor sideCarJavaEditor, SourceType type) {
 		// getElementName(); provides the shortname, like PaperUI, or main
 		// we want the fully qualified name
@@ -118,6 +95,10 @@ public class MonitorEclipse {
 		// TODO: Forward to Flash
 	}
 
+	/**
+	 * @param sideCarJavaEditor
+	 * @param method
+	 */
 	public void gotEditingMethod(final SideCarJavaEditor sideCarJavaEditor, final SourceMethod method) {
 		try {
 			// fully qualified has a bug, in that getPackageFragment returns null! :-(
@@ -147,6 +128,9 @@ public class MonitorEclipse {
 		}
 	}
 
+	/**
+	 * @param file
+	 */
 	public void gotOpenedFileInEditor(java.io.File file) {
 		if (!file.equals(lastFileOpened)) {
 			DebugUtils.println("Opened File: " + file);
@@ -200,19 +184,61 @@ public class MonitorEclipse {
 	 */
 	public void gotTextCopiedFromEditor(String copiedText) {
 		// replace newlines and stuff...
-		String formattedCopiedText = copiedText.replaceAll("\\\\n", "{newline}");
+		String formattedCopiedText = copiedText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
 		DebugUtils.println("Copied " + formattedCopiedText);
+		SideCarVisualizations.getInstance().copiedTextFromEditor(formattedCopiedText);
 	}
 
+	/**
+	 * @param cutText
+	 */
 	public void gotTextCutFromEditor(String cutText) {
 		// replace newlines and stuff...
-		String formattedCutText = cutText.replaceAll("\\\\n", "{newline}");
+		String formattedCutText = cutText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
 		DebugUtils.println("Cut: " + formattedCutText);
+		SideCarVisualizations.getInstance().cutTextFromEditor(formattedCutText);
 	}
 
+	/**
+	 * @param pastedText
+	 */
 	public void gotTextPastedIntoEditor(String pastedText) {
 		// replace newlines and stuff...
-		String formattedPastedText = pastedText.replaceAll("\\\\n", "{newline}");
+		String formattedPastedText = pastedText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
 		DebugUtils.println("Pasted: " + formattedPastedText);
+		SideCarVisualizations.getInstance().pastedTextIntoEditor(formattedPastedText);
+	}
+
+	private void openCompilationUnit(CompilationUnit compilationUnit) {
+		try {
+			IResource correspondingResource = compilationUnit.getCorrespondingResource();
+			if (correspondingResource instanceof org.eclipse.core.internal.resources.File) {
+				File eclipseFile = (File) correspondingResource;
+
+				IWorkbenchWindow workbenchWindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+				if (workbenchWindow == null) {
+					// TODO: DO NOT DO THIS
+					// This opens another Eclipse Window...
+					// workbenchWindow = PlatformUI.getWorkbench().openWorkbenchWindow(null);
+					DebugUtils.println("Workbench Window is Null");
+					return;
+				}
+
+				IWorkbenchPage activePage = workbenchWindow.getActivePage();
+				if (activePage == null) {
+					DebugUtils.println("Active Page is Null");
+					try {
+						activePage = workbenchWindow.openPage(null);
+					} catch (WorkbenchException e) {
+						e.printStackTrace();
+					}
+				}
+				IDE.openEditor(activePage, eclipseFile);
+			}
+		} catch (JavaModelException e) {
+			e.printStackTrace();
+		} catch (PartInitException e) {
+			e.printStackTrace();
+		}
 	}
 }

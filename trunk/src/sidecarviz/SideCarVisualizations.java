@@ -25,7 +25,7 @@ import sidecarviz.core.MonitorToolkit;
 public class SideCarVisualizations {
 
 	private static SideCarVisualizations instance;
-	private static final boolean OPEN_FLASH_GUI = false;
+	private static final boolean OPEN_FLASH_GUI = true;
 
 	// because it's a research prototype...
 	// this is also done in PaperToolkit, as a fallback for the eclipse plugin... :(
@@ -158,6 +158,17 @@ public class SideCarVisualizations {
 		sideCarClientForFirefoxBrowser.setCommandHandler(sideCarServer);
 	}
 
+	public void copiedTextFromEditor(String formattedCopiedText) {
+		sendToFlashGUI("<copiedFromEditor contents=\"" + formattedCopiedText + "\" />");
+
+	}
+	public void cutTextFromEditor(String formattedCutText) {
+		sendToFlashGUI("<cutFromEditor contents=\"" + formattedCutText + "\" />");
+	}
+	public void pastedTextIntoEditor(String formattedPastedText) {
+		sendToFlashGUI("<pasteIntoEditor contents=\"" + formattedPastedText + "\" />");
+	}
+	
 	/**
 	 * Forward information to Flash!
 	 * 
@@ -166,7 +177,6 @@ public class SideCarVisualizations {
 	public void sendToFlashGUI(String message) {
 		sideCarServer.sendToFlashGUI(message);
 	}
-
 	/**
 	 * Kills the instance, so that the next call to getInstance will reinitialize everything!
 	 */
