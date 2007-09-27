@@ -184,7 +184,7 @@ public class MonitorEclipse {
 	 */
 	public void gotTextCopiedFromEditor(String copiedText) {
 		// replace newlines and stuff...
-		String formattedCopiedText = copiedText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
+		String formattedCopiedText = copiedText.replaceAll("\\n", " ").replaceAll("\"", "'").trim();
 		DebugUtils.println("Copied " + formattedCopiedText);
 		SideCarVisualizations.getInstance().copiedTextFromEditor(formattedCopiedText);
 	}
@@ -194,7 +194,7 @@ public class MonitorEclipse {
 	 */
 	public void gotTextCutFromEditor(String cutText) {
 		// replace newlines and stuff...
-		String formattedCutText = cutText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
+		String formattedCutText = cutText.replaceAll("\\n", " ").replaceAll("\"", "'").trim();
 		DebugUtils.println("Cut: " + formattedCutText);
 		SideCarVisualizations.getInstance().cutTextFromEditor(formattedCutText);
 	}
@@ -204,7 +204,7 @@ public class MonitorEclipse {
 	 */
 	public void gotTextPastedIntoEditor(String pastedText) {
 		// replace newlines and stuff...
-		String formattedPastedText = pastedText.replaceAll("\\n", "{\\n}").replaceAll("\"", "\\\"");
+		String formattedPastedText = pastedText.replaceAll("\\n", " ").replaceAll("\"", "'").trim();
 		DebugUtils.println("Pasted: " + formattedPastedText);
 		SideCarVisualizations.getInstance().pastedTextIntoEditor(formattedPastedText);
 	}
