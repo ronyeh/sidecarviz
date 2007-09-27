@@ -53,8 +53,8 @@
 		focusEnabled="false" doubleClick="doubleClicked(event);" doubleClickEnabled="true">
 		<mx:columns>
 			<mx:AdvancedDataGridColumn headerText="Time" dataField="Time" width="90"/>
-			<mx:AdvancedDataGridColumn headerText="Location" dataField="Location" width="110"/>
-			<mx:AdvancedDataGridColumn headerText="Action" dataField="Interaction" width="130"/>
+			<mx:AdvancedDataGridColumn headerText="Action" dataField="Interaction" width="100"/>
+			<mx:AdvancedDataGridColumn headerText="Location" dataField="Location" width="130"/>
 			<mx:AdvancedDataGridColumn headerText="Information" dataField="Details" width="330"/>
 		</mx:columns>
 	</mx:AdvancedDataGrid>

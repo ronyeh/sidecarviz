@@ -42,9 +42,9 @@ public class SideCarServer {
 	 * 
 	 */
 	private void addSupportedCommands() {
-		
+
 		// Commands that start with SC:: come from Firefox
-		
+
 		// takes one argument, the URL
 		server.addCommand("SC::ClipboardContentsChanged", new ExternalCommand() {
 			// url
@@ -54,7 +54,7 @@ public class SideCarServer {
 				try {
 					String clipboardData = (String) Toolkit.getDefaultToolkit().getSystemClipboard().getData(
 							DataFlavor.stringFlavor);
-					// DebugUtils.println(clipboardData);
+					DebugUtils.println("Clipboard Changed: " + clipboardData);
 					// track all copies
 					sendToFlashGUI("<clipboardChanged url=\"" + args[0] + "\" contents=\"" + clipboardData
 							+ "\"/>");
@@ -125,6 +125,26 @@ public class SideCarServer {
 	}
 
 	/**
+	 * @param url
+	 * @return
+	 */
+	private String getSearchTerm(String url) {
+		String searchTerm = "";
+		// Searched For
+		int indexOfQuestionMark = url.indexOf("?");
+		// get the parameters, after the ?
+		String params = url.substring(indexOfQuestionMark + 1);
+		String[] paramArr = params.split("&");
+		for (String param : paramArr) {
+			if (param.startsWith("q=")) {
+				searchTerm = param.substring(2);
+			}
+		}
+		searchTerm = searchTerm.replaceAll("\\+", " ");
+		return searchTerm;
+	}
+
+	/**
 	 * @param line
 	 */
 	public void handleCommand(String line) {
@@ -147,26 +167,6 @@ public class SideCarServer {
 	 */
 	public void sendToFlashGUI(String message) {
 		server.sendMessage(message);
-	}
-
-	/**
-	 * @param url
-	 * @return
-	 */
-	private String getSearchTerm(String url) {
-		String searchTerm = "";
-		// Searched For
-		int indexOfQuestionMark = url.indexOf("?");
-		// get the parameters, after the ?
-		String params = url.substring(indexOfQuestionMark + 1);
-		String[] paramArr = params.split("&");
-		for (String param : paramArr) {
-			if (param.startsWith("q=")) {
-				searchTerm = param.substring(2);
-			}
-		}
-		searchTerm = searchTerm.replaceAll("\\+", " ");
-		return searchTerm;
 	}
 
 }

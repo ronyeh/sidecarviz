@@ -102,7 +102,7 @@ package tools {
 		            break;
 				case "clipboardChanged":
 					// trace("Clipboard Changed on Website: " + msg.@url + " to value " + msg.@contents);
-					gui.interactionHistory.addData("Update Clipboard", msg.@url + " : " + msg.@contents);
+					gui.interactionHistory.addData("Update Clipboard", msg.@url, msg.@contents);
 					break;
 				case "currentlyEditing":
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
