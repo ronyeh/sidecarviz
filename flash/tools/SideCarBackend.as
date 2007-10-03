@@ -130,6 +130,9 @@ package tools {
 					trace("DebugOutput: " + msg.@value + " at " + msg.@location);
 					addSystemOutputData(msg.@location, "Event", msg.@value);
 					break;
+				case "addHandler": // will automatically add regions and sheets!
+					addHandler(msg.@handlerName, msg.@regionName, msg.@sheetName);
+					break;
             	default:
 		            trace("Unhandled: " + msg.toXMLString());
     	        	break;
@@ -145,14 +148,10 @@ package tools {
 			gui.interactionHistory.addData(event, where, info);
 		}
 
-		public function addSheet(sheetName:String):void {
-			
-		}
-		public function addRegion(regName:String, sheetName:String):void {
-			
-		}
+		// populate the gui with our paper UI information
 		public function addHandler(handlerName:String, regName:String, sheetName:String):void {
-			
+			trace("Adding Handler: " + handlerName + " " + regName + " " + sheetName);
+			gui.systemInternals.addHandlerItem(handlerName, regName, sheetName);
 		}
 
 		// adds a state to the shelf

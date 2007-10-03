@@ -118,7 +118,8 @@
 				sideCar = sc;
 			}
 
-			public function addSheetItem(sheetName:String):void {
+			// add a sheet!
+			private function addSheetItem(sheetName:String):void {
 				// assume you won't add two sheets with the same name!
 				if (sheets[sheetName] != null) {
 					return;
@@ -130,9 +131,13 @@
 			}
 			
 			// we keep a map of sheetNames to XML sheet items... we can append children faster that way
-			public function addRegionItem(regionName:String, sheetName:String):void {
+			private function addRegionItem(regionName:String, sheetName:String):void {
 				var sheetItem:XML = sheets[sheetName];
-				if (sheetItem == null) return;
+				// if the sheet doesn't exist, add it!
+				if (sheetItem == null) {
+					addSheetItem(sheetName);
+					sheetItem = sheets[sheetName];
+				}
 				var regionItem:XML = <region label={regionName} nodeType="Region"/>;
 				regions[sheetName+"_"+regionName] = regionItem;
 				sheetItem.appendChild(regionItem);
@@ -142,7 +147,11 @@
 			// we keep a map of sheetName_regionName, and assume that is unique...
 			public function addHandlerItem(handlerName:String, regionName:String, sheetName:String):void {
 				var regionItem:XML = regions[sheetName+"_"+regionName];
-				if (regionItem == null) return;
+				// add the region and/or sheet for ya!
+				if (regionItem == null) {
+					addRegionItem(regionName, sheetName);
+					regionItem = regions[sheetName+"_"+regionName];
+				}
 				regionItem.appendChild(<handler label={handlerName} nodeType="Handler"/>);
 				timerExpandTree.start();
 			}

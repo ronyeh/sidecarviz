@@ -25,7 +25,7 @@ import sidecarviz.core.MonitorToolkit;
 public class SideCarVisualizations {
 
 	private static SideCarVisualizations instance;
-	private static final boolean OPEN_FLASH_GUI = true;
+	public static final boolean OPEN_FLASH_GUI_ON_START = true;
 
 	// because it's a research prototype...
 	// this is also done in PaperToolkit, as a fallback for the eclipse plugin... :(
@@ -102,7 +102,7 @@ public class SideCarVisualizations {
 
 		// will force firefox to open... and start its server at 54321
 		// the flash GUI will connect to us at 43210
-		if (OPEN_FLASH_GUI) {
+		if (OPEN_FLASH_GUI_ON_START) {
 			sideCarServer.openFlashGUI();
 		}
 
@@ -143,6 +143,7 @@ public class SideCarVisualizations {
 
 	/**
 	 * Listens for info from PaperToolkit.
+	 * Called from SideCarServer, when it receives the StartFlexGUI command
 	 */
 	public void connectToTheToolkit() {
 		toolkitListener = new MonitorToolkit(this);

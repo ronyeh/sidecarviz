@@ -6,6 +6,7 @@ package states
 	import mx.core.UIComponent;
 	import mx.states.SetEventHandler;
 
+	// This should be a bitmap of the Swing component that was just displayed...
 	public class VisualFeedback extends State {
 		private var shape:Sprite = new Sprite();
 		private var pageHeightVal:int = 200;

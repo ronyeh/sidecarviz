@@ -27,6 +27,7 @@ public class MonitorToolkit {
 	private SideCarVisualizations viz;
 
 	/**
+	 * This is the client that connects to the PaperToolkit server.
 	 * @param sideCarVisualizations
 	 */
 	public MonitorToolkit(final SideCarVisualizations sideCarVisualizations) {

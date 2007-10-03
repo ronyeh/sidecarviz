@@ -45,7 +45,7 @@
 	<mx:Fade id="fOutDetails" alphaTo="0" target="{systemInternals}" effectEnd="sc.endFadeOutDetails()"/>
 	<mx:Fade id="fInDetails" alphaTo="0.75" target="{systemInternals}" effectStart="sc.startFadeInDetails()"/>
 
-	<mx:Label text="SideCar Visualizations" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
+	<mx:Label text="SideCar" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
 
 
 	<mx:HBox width="50%" left="0" top="5">
