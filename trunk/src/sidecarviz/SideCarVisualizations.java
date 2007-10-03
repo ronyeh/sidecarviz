@@ -50,6 +50,7 @@ public class SideCarVisualizations {
 	private HashMap<Integer, String> fileIDToPath = new HashMap<Integer, String>();
 	private String lastFileAbsolutePath = "";
 	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
+	
 	/**
 	 * Connects to Firefox over port 54321, and listens for information! The message handlers happen to be
 	 * stored in sideCarServer....
@@ -144,9 +145,13 @@ public class SideCarVisualizations {
 	/**
 	 * Listens for info from PaperToolkit.
 	 * Called from SideCarServer, when it receives the StartFlexGUI command
+	 * We should be able to call this multiple times...
 	 */
 	public void connectToTheToolkit() {
-		toolkitListener = new MonitorToolkit(this);
+		if (toolkitListener == null) {
+			DebugUtils.println("Connecting to the Toolkit");
+			toolkitListener = new MonitorToolkit(this);
+		}
 	}
 
 	/**
@@ -159,13 +164,24 @@ public class SideCarVisualizations {
 		sideCarClientForFirefoxBrowser.setCommandHandler(sideCarServer);
 	}
 
+	/**
+	 * @param formattedCopiedText
+	 */
 	public void copiedTextFromEditor(String formattedCopiedText) {
 		sendToFlashGUI("<copiedFromEditor contents=\"" + formattedCopiedText + "\" />");
 
 	}
+	
+	/**
+	 * @param formattedCutText
+	 */
 	public void cutTextFromEditor(String formattedCutText) {
 		sendToFlashGUI("<cutFromEditor contents=\"" + formattedCutText + "\" />");
 	}
+	
+	/**
+	 * @param formattedPastedText
+	 */
 	public void pastedTextIntoEditor(String formattedPastedText) {
 		sendToFlashGUI("<pasteIntoEditor contents=\"" + formattedPastedText + "\" />");
 	}

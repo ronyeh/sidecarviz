@@ -28,7 +28,7 @@ package tools {
 		// for segmenting interactions...
 		private var timeOfLastPenUp:Number = 0;
 
-
+		// constructor
 		public function SideCarBackend(ui:SideCar):void {
 			gui = ui;
 			// start the communication with Java

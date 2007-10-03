@@ -46,11 +46,12 @@ public class MonitorToolkit {
 						}
 						try {
 							String inputLine = bufferedReader.readLine();
+							// DebugUtils.println("Forwarding Message to Flash GUI: " + inputLine);
 							// forward it on to the flex client
 							viz.sendToFlashGUI(inputLine);
 						} catch (IOException e) {
 							done = true;
-							DebugUtils.println("It's likely that PaperToolkit has exited...");
+							DebugUtils.println("PaperToolkit has exited, so we are no longer receiving messages.");
 							try {
 								toolkitConnection.close();
 							} catch (IOException ioe) {
