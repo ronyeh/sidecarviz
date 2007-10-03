@@ -9,6 +9,7 @@ package states
 	import ink.Ink;
 	import flash.geom.Rectangle;
 
+	// This should be either input ink, or a visualization of the event handler firing...
 	public class Page extends State {
 		private var shape:Sprite = new Sprite();
 		private var pageHeightVal:int = 200;

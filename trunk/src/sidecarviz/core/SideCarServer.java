@@ -10,6 +10,7 @@ import java.io.IOException;
 import papertoolkit.application.config.Constants.Ports;
 import papertoolkit.external.ExternalCommand;
 import papertoolkit.external.ExternalCommunicationServer;
+import papertoolkit.tools.services.ToolkitMonitoringService;
 import papertoolkit.util.DebugUtils;
 import sidecarviz.SideCarVisualizations;
 
@@ -107,15 +108,19 @@ public class SideCarServer {
 				DebugUtils.println("User Typed: " + args[0]);
 			}
 		});
-		server.addCommand("StartFlexGUI", new ExternalCommand() {
+		
+		// the Paper App should send us this command, so that we connect to the monitor
+		server.addCommand(ToolkitMonitoringService.START_SIDECAR, new ExternalCommand() {
 			public void invoke(String... args) {
-				DebugUtils.println("Starting the SideCar Flex GUI");
 
+				DebugUtils.println("Connecting to the Toolkit");
 				// connect to the toolkit monitoring service...
 				viz.connectToTheToolkit();
 
-				// open the sidecar flex gui...
-				openFlashGUI();
+				if (!SideCarVisualizations.OPEN_FLASH_GUI_ON_START) {
+					// open the sidecar flex gui...NOW! =)
+					openFlashGUI();
+				}
 			}
 		});
 	}
@@ -155,6 +160,7 @@ public class SideCarServer {
 	 * Well, since we are running it from the Eclipse plugin... we should hard-code the path for now.
 	 */
 	public void openFlashGUI() {
+		DebugUtils.println("Starting the SideCar Flex GUI");
 		final File sidecarHTML = new File(
 				"C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz/flash/bin/SideCar.html");
 		server.openFlashHTMLGUI(sidecarHTML);
