@@ -37,7 +37,19 @@
 			private function displayShelfStopped():void {
 				// trace("DisplayShelf stopped moving...");
 			}
-			
+
+
+            [Bindable]
+            public var utilFunctions: Array = 
+            	[ {label:"Load Replay Log", data:1}, {label:"Exit", data:2}, {label:"About", data:3} ];
+        
+            [Bindable]
+            public var selectedItem:Object;        
+            
+            private function utilFunctionSelected():void {
+            	trace("Selected: " + utilMenu.selectedLabel);
+            }
+            			
 		]]>
 	</mx:Script>
 
@@ -45,8 +57,12 @@
 	<mx:Fade id="fOutDetails" alphaTo="0" target="{systemInternals}" effectEnd="sc.endFadeOutDetails()"/>
 	<mx:Fade id="fInDetails" alphaTo="0.75" target="{systemInternals}" effectStart="sc.startFadeInDetails()"/>
 
-	<mx:Label text="SideCar" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
-
+	<mx:Label text="SideCar Monitor" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
+	
+	<mx:ComboBox id="utilMenu" dataProvider="{utilFunctions}" top="5" left="250" text="Utilities" 
+		width="90" close="{utilFunctionSelected()}" color="0x000000">
+	</mx:ComboBox>
+	
 
 	<mx:HBox width="50%" left="0" top="5">
 		<mx:Spacer width="52%" />
