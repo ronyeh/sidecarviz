@@ -36,7 +36,6 @@ public class SideCarServer {
 	public SideCarServer(SideCarVisualizations scv) {
 		viz = scv;
 		server = new ExternalCommunicationServer(Ports.SIDE_CAR_COMMUNICATIONS);
-		server.setMaxNumClients(1);
 		server.setVerbose(true);
 		addSupportedCommands();
 	}

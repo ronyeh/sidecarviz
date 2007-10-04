@@ -10,6 +10,8 @@
 	
 	<mx:Script>
 		<![CDATA[
+			import mx.events.MenuEvent;
+			import mx.controls.Menu;
 			import states.Page;
 			import tools.SideCarBackend;
 			import tools.Images;
@@ -21,6 +23,7 @@
 			private var sc:SideCarBackend;
 			
 			public function init():void {
+				trace("SideCar GUI Starting...");
 				sc = new SideCarBackend(this);
 				interactionHistory.setSideCar(sc);
 				systemInternals.setSideCar(sc);
@@ -41,13 +44,41 @@
 
             [Bindable]
             public var utilFunctions: Array = 
-            	[ {label:"Load Replay Log", data:1}, {label:"Exit", data:2}, {label:"About", data:3} ];
+            	[ 
+            	  {label:"Exit"},
+            	  {label:"Load Replay Log"}
+            	];
         
             [Bindable]
             public var selectedItem:Object;        
             
-            private function utilFunctionSelected():void {
-            	trace("Selected: " + utilMenu.selectedLabel);
+            private var popupMenu:Menu;
+            private function initPopupButtonMenu():void {
+            	popupMenu = new Menu();
+            	popupMenu.dataProvider = utilFunctions;
+            	popupMenu.selectedIndex = 0;
+            	popupMenu.addEventListener(MenuEvent.ITEM_CLICK, popupMenuClicked);
+            	popupButton.popUp = popupMenu;
+            }
+            
+            private function popupMenuClicked(e:MenuEvent):void {
+            	var label:String = e.item.label;
+            	trace(e.index);
+            	
+            	popupButton.label = label;
+            	popupButton.close();
+            	popupMenu.selectedIndex = e.index;
+            	
+            	switch(label) {
+            		case "Exit":
+            			// disconnect from the SideCar server....
+            			sc.sendMessageWithArgsToSideCarServer("exitClients", "FlexGUI");
+    	        		break;
+            		default:
+            			trace("Unimplemented handler for PopupMenuItem: " + label);
+	            		break;
+            	}
+            	
             }
             			
 		]]>
@@ -59,9 +90,10 @@
 
 	<mx:Label text="SideCar Monitor" fontSize="33" fontFamily="Myriad Pro" left="5" top="5"/>
 	
-	<mx:ComboBox id="utilMenu" dataProvider="{utilFunctions}" top="5" left="250" text="Utilities" 
-		width="90" close="{utilFunctionSelected()}" color="0x000000">
-	</mx:ComboBox>
+	<mx:PopUpButton top="5" left="270" styleName="button"
+		label="Actions" creationComplete="initPopupButtonMenu()"
+		width="130" id="popupButton" >
+	</mx:PopUpButton>
 	
 
 	<mx:HBox width="50%" left="0" top="5">
@@ -98,7 +130,7 @@
 		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
 			maximum="{shelf.numItems-1}" snapInterval="1" width="30%" 
 			showDataTip="false" focusEnabled="false"/>
-		<mx:Button label="+" click="sc.addPageState()"/>
+		<mx:Button label="+" click="sc.addPageState()" styleName="button"/>
 		<mx:Spacer width="45%"/>		
 	</mx:HBox>
 
