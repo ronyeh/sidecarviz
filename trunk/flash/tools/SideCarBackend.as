@@ -86,7 +86,7 @@ package tools {
             trace("Incoming Message: " + msg.toXMLString());
             switch(msgName) {
             	case "eventHandler":
-            		addSystemOutputData(msg.@component, msg.@handlerName, "", msg.@time);
+            		addSystemOutputData(msg.@component, msg.@handlerName, "");
 	            	break;
 	            case "googleSearch":
 					searchQuery = unescape(msg.@searchQuery);
@@ -139,10 +139,16 @@ package tools {
 					break;
 				case "debugOutput":
 					trace("DebugOutput: " + msg.@value + " at " + msg.@location);
-					addSystemOutputData(msg.@location, "Event", msg.@value);
+					addSystemOutputData(msg.@location, "Debug Output", msg.@value);
 					break;
 				case "addHandler": // will automatically add regions and sheets!
 					addHandler(msg.@handlerName, msg.@regionName, msg.@sheetName);
+					break;
+				case "toolkitConnected":
+					gui.interactionHistory.addData("PaperToolkit Started", "");
+					break;
+				case "applicationStarted":
+					gui.interactionHistory.addData("Application Started", msg.@appName);
 					break;
             	default:
 		            trace("Unhandled: " + msg.toXMLString());
@@ -155,7 +161,7 @@ package tools {
 		}
 
 		// this represents the output of the system... as opposed to the interaction history pane, which contains input from the developer
-		private function addSystemOutputData(where:String, event:String, info:String, time:String=null):void {
+		private function addSystemOutputData(where:String, event:String, info:String):void {
 			gui.interactionHistory.addData(event, where, info);
 		}
 
