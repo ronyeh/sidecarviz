@@ -46,7 +46,7 @@ public class MonitorToolkit {
 						}
 						try {
 							String inputLine = bufferedReader.readLine();
-							// DebugUtils.println("Forwarding Message to Flash GUI: " + inputLine);
+							DebugUtils.println("Forwarding Message from Toolkit to Flash GUI: " + inputLine);
 							// forward it on to the flex client
 							viz.sendToFlashGUI(inputLine);
 						} catch (IOException e) {

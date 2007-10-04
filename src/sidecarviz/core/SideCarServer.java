@@ -122,6 +122,8 @@ public class SideCarServer {
 		// the Paper App should send us this command, so that we connect to the monitor
 		server.addCommand(ToolkitMonitoringService.START_SIDECAR, new ExternalCommand() {
 			public void invoke(String... args) {
+				DebugUtils.println("Connecting to the Toolkit");
+				
 				// connect to the toolkit monitoring service...
 				viz.connectToTheToolkit();
 
@@ -138,6 +140,7 @@ public class SideCarServer {
 		// manually reopen the flash GUI
 		server.addCommand(ToolkitMonitoringService.START_SIDECAR_GUI, new ExternalCommand() {
 			public void invoke(String... args) {
+				DebugUtils.println("Opening Flash GUI");
 				// open the sidecar flex gui...NOW! =)
 				openFlashGUI();
 			}
