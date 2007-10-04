@@ -89,14 +89,16 @@ public class SideCarVisualizations {
 		// For now, use constant
 
 		// start a server here... (43210)
+		// two things connect to it...
+		// PaperToolkit, and the flex gui...
 		sideCarServer = new SideCarServer(this);
 
 		// start the local pen...
 		sideCarPen = new SideCarPen(this);
 
-		// wait a second or so
+		// wait half a second or so
 		try {
-			Thread.sleep(800);
+			Thread.sleep(500);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

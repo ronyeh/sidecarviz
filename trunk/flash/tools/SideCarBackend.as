@@ -1,14 +1,13 @@
 package tools {
 	import flash.display.LoaderInfo;
 	import flash.events.DataEvent;
+	import flash.events.Event;
 	import flash.events.TimerEvent;
 	import flash.utils.Timer;
 	
 	import ink.InkStroke;
 	
 	import java.JavaIntegration;
-	
-	import mx.collections.ArrayCollection;
 	
 	import states.Page;
 	import states.State;
@@ -59,9 +58,21 @@ package tools {
 
 		// this is called after the command line arguments are processed
 		private function start():void {
-			// toggleFullScreen();
 			javaBackend = new JavaIntegration(portNum);	
 			javaBackend.addMessageListener(msgListener);
+			javaBackend.addConnectListener(connected);
+		}
+		
+		private function connected(e:Event):void {
+			// set the name of this client
+			javaBackend.sendWithArgs("setName", "FlexGUI");
+		}
+
+		public function sendMessageToSideCarServer(msg:String):void {
+			javaBackend.send(msg);
+		}
+		public function sendMessageWithArgsToSideCarServer(msg:String, ...args):void {
+			javaBackend.sendWithArgs(msg, args);
 		}
 
 		// handle messages
@@ -72,7 +83,7 @@ package tools {
             var msg:XML = new XML(event.text);
             var msgName:String = msg.name();
             var searchQuery:String = "";
-            // trace("Incoming Message: " + msg.toXMLString());
+            trace("Incoming Message: " + msg.toXMLString());
             switch(msgName) {
             	case "eventHandler":
             		addSystemOutputData(msg.@component, msg.@handlerName, "", msg.@time);
