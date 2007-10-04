@@ -41,9 +41,9 @@ public class SideCarServer {
 	}
 
 	/**
-	 * In actuality, we only ever have one client (the Flash GUI that we send data to). However, we populate
-	 * the server with a bunch of commands for handling integration with Firefox and the toolkit, since it can
-	 * parse out the command and arguments...
+	 * In actuality, we only ever have two clients (the Flash GUI that we send data to, and the Toolkit's
+	 * Monitoring Service). However, we populate the server with a bunch of commands for handling integration
+	 * with Firefox and the toolkit, since it can parse out the command and arguments...
 	 * 
 	 * Commands should look like %%commandName%%@_arg1_@@_arg2_@@_arg3_@
 	 * 
@@ -51,7 +51,7 @@ public class SideCarServer {
 	 */
 	private void addSupportedCommands() {
 
-		//////////////////////////////////////////////////
+		// ////////////////////////////////////////////////
 		// FIREFOX INTEGRATION
 		// takes one argument, the URL
 		server.addCommand("Firefox::ClipboardContentsChanged", new ExternalCommand() {
@@ -116,23 +116,24 @@ public class SideCarServer {
 			}
 		});
 
-		//////////////////////////////////////////////////
+		// ////////////////////////////////////////////////
 		// PAPER TOOLKIT INTEGRATION
 		// the Paper App should send us this command, so that we connect to the monitor
 		server.addCommand(ToolkitMonitoringService.START_SIDECAR, new ExternalCommand() {
 			public void invoke(String... args) {
-				DebugUtils.println("Connecting to the Toolkit");
-
 				// connect to the toolkit monitoring service...
 				viz.connectToTheToolkit();
 
 				// can we check if the flash GUI is still around???
 				// apparently not! :-(
-
 				if (!SideCarVisualizations.OPEN_FLASH_GUI_ON_START) {
 					// open the sidecar flex gui...NOW! =)
 					openFlashGUI();
 				}
+
+				// assume the flash gui is around...
+				// send a message to tell it that the toolkit has connected
+				sendToFlashGUI("<toolkitConnected />");
 			}
 		});
 
@@ -145,7 +146,7 @@ public class SideCarServer {
 			}
 		});
 
-		//////////////////////////////////////////////////
+		// ////////////////////////////////////////////////
 		// FLASH GUI INTEGRATION
 		// 
 		server.addCommand(new ExternalCommand("Flex::ReplayFromBeginning") {
