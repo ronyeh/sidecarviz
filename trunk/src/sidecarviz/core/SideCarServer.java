@@ -51,9 +51,8 @@ public class SideCarServer {
 	 */
 	private void addSupportedCommands() {
 
+		//////////////////////////////////////////////////
 		// FIREFOX INTEGRATION
-		// Commands that start with SC:: come from Firefox
-
 		// takes one argument, the URL
 		server.addCommand("Firefox::ClipboardContentsChanged", new ExternalCommand() {
 			// url
@@ -117,13 +116,13 @@ public class SideCarServer {
 			}
 		});
 
-		
+		//////////////////////////////////////////////////
 		// PAPER TOOLKIT INTEGRATION
 		// the Paper App should send us this command, so that we connect to the monitor
 		server.addCommand(ToolkitMonitoringService.START_SIDECAR, new ExternalCommand() {
 			public void invoke(String... args) {
 				DebugUtils.println("Connecting to the Toolkit");
-				
+
 				// connect to the toolkit monitoring service...
 				viz.connectToTheToolkit();
 
@@ -145,9 +144,8 @@ public class SideCarServer {
 				openFlashGUI();
 			}
 		});
-		
-		
-		
+
+		//////////////////////////////////////////////////
 		// FLASH GUI INTEGRATION
 		// 
 		server.addCommand(new ExternalCommand("Flex::ReplayFromBeginning") {

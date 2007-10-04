@@ -202,10 +202,15 @@
 
 			private function treeChanged(event:Event):void {
 				selectedNode = (event.target as Tree).selectedItem as XML;
-				trace("Tree Changed: " + selectedNode.@label);
+				// trace("Tree Changed: " + selectedNode.@label);
 			}
 			private function treeItemSelected():void {
-				trace("Selected Tree Items: " + paperUITree.selectedIndices);
+				// trace("Selected Tree Items: " + paperUITree.selectedIndices);
+			}
+			private function treeItemDoubleClicked(event:Event):void {
+				// trace("Double Clicked: " + paperUITree.selectedIndex);
+				selectedNode = (event.target as Tree).selectedItem as XML;
+				trace("Double Clicked on : " + selectedNode.name());
 			}
 			
 			public function goToLastEditLocation():void {
@@ -244,7 +249,7 @@
 		<mx:Tree id="paperUITree" top="95" left="10" right="10" width="100%" height="100%" 
 			labelField="@label" styleName="tree" defaultLeafIcon="{Images.Handler}" 
 			iconFunction="iconFunction" change="treeChanged(event);" 
-			dataProvider="" click="treeItemSelected()"/>
+			dataProvider="" click="treeItemSelected()" doubleClick="treeItemDoubleClicked(event)" doubleClickEnabled="true"/>
 		<mx:HBox horizontalGap="0" verticalAlign="middle" width="100%">
 			<mx:Label styleName="detailsText" text="Last Edit:"/>
 			<mx:VBox>
