@@ -216,9 +216,8 @@
 				// switch on nodetype... and find its parents
 				// send this information back to Eclipse, and Eclipse should open the IDE up to the right place....
 				
-				xxxxxxxxxxx NEXT
-				xxxxxxxxxxx Hook Up Replay Somehow.... Argh. That is the big thing!
-				
+				// xxxxxxxxxxx NEXT
+				//xxxxxxxxxxx Hook Up Replay Somehow.... Argh. That is the big thing!
 			}
 			
 			public function goToLastEditLocation():void {
