@@ -32,25 +32,28 @@ public class SideCarVisualizations {
 	private static final String SIDECAR_PATH = "C:/Documents and Settings/Ron Yeh/My Documents/Projects/SideCarViz";
 
 	private static int uniqueFileHandle = 0;
+
 	public static synchronized SideCarVisualizations getInstance() {
 		if (instance == null) {
 			instance = new SideCarVisualizations();
 		}
 		return instance;
 	}
+
 	/**
-	 * For testing SideCar separate from the Eclipse Application.
+	 * For testing SideCar separate from the Eclipse Application. This is the most reliable way so far.... The
+	 * Eclipse Plug-in is really buggy. Let's not worry about Firefox and Eclipse integration for now.
 	 * 
 	 * @param args
 	 */
 	public static void main(String[] args) {
 		new SideCarVisualizations();
 	}
-	
+
 	private HashMap<Integer, String> fileIDToPath = new HashMap<Integer, String>();
 	private String lastFileAbsolutePath = "";
 	private HashMap<String, Integer> pathToFileID = new HashMap<String, Integer>();
-	
+
 	/**
 	 * Connects to Firefox over port 54321, and listens for information! The message handlers happen to be
 	 * stored in sideCarServer....
@@ -79,8 +82,9 @@ public class SideCarVisualizations {
 	 */
 	private SideCarVisualizations() {
 		Configuration.setPropertyValue(Configuration.Keys.TOOLKIT_ICON_PATH.toString(), "icons/planet.png");
-		Configuration.setPropertyValue(Configuration.Keys.TOOLKIT_ICON_TITLE.toString(), "SideCar Visualizations");
-		
+		Configuration.setPropertyValue(Configuration.Keys.TOOLKIT_ICON_TITLE.toString(),
+				"SideCar Visualizations");
+
 		// currently, we set PaperToolkit's directory statically
 		// TODO: we should use a configuration file or an eclipse preference
 
@@ -145,9 +149,8 @@ public class SideCarVisualizations {
 	}
 
 	/**
-	 * Listens for info from PaperToolkit.
-	 * Called from SideCarServer, when it receives the StartFlexGUI command
-	 * We should be able to call this multiple times...
+	 * Listens for info from PaperToolkit. Called from SideCarServer, when it receives the StartFlexGUI
+	 * command We should be able to call this multiple times...
 	 */
 	public void connectToTheToolkit() {
 		if (toolkitListener == null) {
@@ -173,21 +176,21 @@ public class SideCarVisualizations {
 		sendToFlashGUI("<copiedFromEditor contents=\"" + formattedCopiedText + "\" />");
 
 	}
-	
+
 	/**
 	 * @param formattedCutText
 	 */
 	public void cutTextFromEditor(String formattedCutText) {
 		sendToFlashGUI("<cutFromEditor contents=\"" + formattedCutText + "\" />");
 	}
-	
+
 	/**
 	 * @param formattedPastedText
 	 */
 	public void pastedTextIntoEditor(String formattedPastedText) {
 		sendToFlashGUI("<pasteIntoEditor contents=\"" + formattedPastedText + "\" />");
 	}
-	
+
 	/**
 	 * Forward information to Flash!
 	 * 
@@ -196,6 +199,7 @@ public class SideCarVisualizations {
 	public void sendToFlashGUI(String message) {
 		sideCarServer.sendToFlashGUI(message);
 	}
+
 	/**
 	 * Kills the instance, so that the next call to getInstance will reinitialize everything!
 	 */

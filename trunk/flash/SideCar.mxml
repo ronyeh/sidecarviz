@@ -12,7 +12,7 @@
 		<![CDATA[
 			import mx.events.MenuEvent;
 			import mx.controls.Menu;
-			import states.Page;
+			import states.InkInputState;
 			import tools.SideCarBackend;
 			import tools.Images;
 
@@ -130,7 +130,9 @@
 		<mx:HSlider liveDragging="true" id="sel" minimum="0" value="0" 
 			maximum="{shelf.numItems-1}" snapInterval="1" width="30%" 
 			showDataTip="false" focusEnabled="false"/>
-		<mx:Button label="+" click="sc.addPageState()" styleName="button"/>
+		<mx:Button label="+P" click="sc.addPageState()" styleName="button"/>
+		<mx:Button label="+E" click="sc.addEventFiredState(1, 1, 4, 2)" styleName="button"/>
+		<mx:Button label="+G" click="sc.addGUIOutputState()" styleName="button"/>
 		<mx:Spacer width="45%"/>		
 	</mx:HBox>
 
