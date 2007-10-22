@@ -19,8 +19,8 @@ package components {
     import states.State;
     import ink.InkStroke;
     import states.State;
-    import states.VisualFeedback;
-    import states.Page;
+    import states.GUIFeedbackState;
+    import states.InkInputState;
 
     // defining styles on the DisplayShelf.  By defining these styles here in metadata, developers will be allowed
     // to specify values for these styles as attributes on the MXML tag.  Note that this component doesn't actually
@@ -136,10 +136,10 @@ package components {
 		public function addInkStroke(stroke:InkStroke):void {
 			// get the current item, and pass the stroke to it...
 			var currState:State = myItems[_selectedIndex] as State;
-			if (currState is Page) {
-				var currPage:Page = currState as Page;
+			if (currState is InkInputState) {
+				var currPage:InkInputState = currState as InkInputState;
 				currPage.addInkStroke(stroke);
-			} else if (currState is VisualFeedback){
+			} else if (currState is GUIFeedbackState){
 				
 			}
 		}

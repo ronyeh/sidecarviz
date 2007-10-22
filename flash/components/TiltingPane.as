@@ -302,8 +302,8 @@ package components {
                 if(!isNaN(borderColor) && !isNaN(borderThickness))
                 {
                     /* set the linestyle in the border shape graphics object, and draw the border trapezoid. */
-                    g.lineStyle(borderThickness,borderColor,1,false,LineScaleMode.NORMAL,CapsStyle.NONE,JointStyle.MITER);
-                    drawPerspectiveFrame(g,centerX,0, contentWidth, contentHeight);
+                    g.lineStyle(borderThickness,borderColor,4,false,LineScaleMode.NORMAL,CapsStyle.NONE,JointStyle.MITER);
+                    // drawPerspectiveFrame(g,centerX,0, contentWidth, contentHeight);
                 }                    
             
             }
@@ -322,8 +322,19 @@ package components {
 
             /*    set the shear and horizontal scale to get the basic 3D effect
             */    
-            m.b = _verticalShear;
+            
+            if(_actualAngle >= 0) {
+	            m.b = -_verticalShear; // cheating.... some day, use a perspective matrix
+            } else {
+	            m.b = _verticalShear; // cheating.... some day, use a perspective matrix
+            }
+            
             m.a = _horizontalScale;
+            
+            
+            trace("Shear: " + _verticalShear + "  Scale: " + _horizontalScale);
+
+            
             /*     position the content.  we want it centered horizontally. vertically, we want it to look as though it's at yPosition, but 
             *    with 3D perspective.  So we need to offset by the effect of the shearing.
             */

@@ -9,9 +9,10 @@ package tools {
 	
 	import java.JavaIntegration;
 	
-	import states.Page;
+	import states.InkInputState;
 	import states.State;
-	import states.VisualFeedback;
+	import states.GUIFeedbackState;
+	import states.EventFiredState;
 	
 	// controls the main interaction
 	public class SideCarBackend {
@@ -85,9 +86,6 @@ package tools {
             var searchQuery:String = "";
             trace("Incoming Message: " + msg.toXMLString());
             switch(msgName) {
-            	case "eventHandler":
-            		addSystemOutputData(msg.@component, msg.@handlerName, "");
-	            	break;
 	            case "googleSearch":
 					searchQuery = unescape(msg.@searchQuery);
 	            	trace("Google Search: " + searchQuery);
@@ -117,6 +115,15 @@ package tools {
 					break;
 				case "currentlyEditing":
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
+					break;
+            	case "eventHandler":
+            		addSystemOutputData(msg.@component, msg.@handlerName, "");
+
+
+					// get information on what region got input...
+					// visualize this with a new Event
+					addEventFiredState(parseFloat(msg.@rX), parseFloat(msg.@rY), parseFloat(msg.@rW), parseFloat(msg.@rH));
+					
 					break;
 				case "penDown":
 					// track the time here, and add a new page if appropriate
@@ -172,12 +179,17 @@ package tools {
 		}
 
 		// adds a state to the shelf
-		public function addVisualOutputState():void {
-			var state:State = new VisualFeedback();
+		public function addGUIOutputState():void {
+			var state:State = new GUIFeedbackState();
 			gui.shelf.addItem(state);
 		}
+		public function addEventFiredState(rX:Number, rY:Number, rW:Number, rH:Number):void {
+			var state:EventFiredState = new EventFiredState();
+			gui.shelf.addItem(state);
+			state.addCurrentlyActiveRegion(rX, rY, rW, rH);
+		}
 		public function addPageState():void {
-			var state:State = new Page();
+			var state:State = new InkInputState();
 			gui.shelf.addItem(state);
 		}
 		

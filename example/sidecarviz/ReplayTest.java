@@ -8,6 +8,7 @@ import papertoolkit.paper.Region;
 import papertoolkit.paper.Sheet;
 import papertoolkit.paper.Sheet.SheetSize;
 import papertoolkit.pen.ink.InkStroke;
+import papertoolkit.util.DebugUtils;
 
 /**
  * <p>
@@ -25,16 +26,18 @@ public class ReplayTest {
 	public ReplayTest() {
 		Application application = new Application("Replay");
 		Sheet sheet = new Sheet(SheetSize.A5);
-		Region inkReg = sheet.createRegion(0, 0, 5, 6);
+		Region inkReg = sheet.createRegion(1, 1, 4, 4);
 		inkReg.addEventHandler(new InkHandler() {
 			public void handleInkStroke(PenEvent event, InkStroke mostRecentStroke) {
 				//no println needed!
+				// DebugUtils.println("Inked for " + mostRecentStroke.getDuration() + " ms.");
 			}
 		});
-		Region region = sheet.createRegion(0, 6, 5, 2);
+		Region region = sheet.createRegion(1, 5, 4, 2);
 		region.addEventHandler(new ClickAdapter() {
 			public void clicked(PenEvent e) {
 				// no println needed!
+				// DebugUtils.println("Clicked at " + e.getPercentageLocation());
 			}
 		});
 		application.addSheet(sheet);

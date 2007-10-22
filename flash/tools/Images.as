@@ -15,6 +15,6 @@ package tools {
 
 		[Embed(source="../images/Region.png")]
 		public static const Region:Class;
-		
+
 	}
 }

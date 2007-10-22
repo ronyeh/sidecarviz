@@ -10,13 +10,16 @@ package states
 	import flash.geom.Rectangle;
 
 	// This should be either input ink, or a visualization of the event handler firing...
-	public class Page extends State {
+	// Maybe it should contain both the ink and the event?
+	public class InkInputState extends State {
 		private var shape:Sprite = new Sprite();
 		private var pageHeightVal:int = 200;
 
 		private var inkWell:Ink = new Ink(false);
+
+		private const aspectRatio:Number = 11/11; // width / height
 		 
-		public function Page():void {
+		public function InkInputState():void {
 			pageHeight = pageHeightVal;
 			addChild(shape);
 			addChild(inkWell);
@@ -25,18 +28,19 @@ package states
 		public function set pageHeight(h:int):void {
 			pageHeightVal = h;
 			explicitHeight = pageHeightVal;
-			explicitWidth = explicitHeight*8.5/11;
+			explicitWidth = explicitHeight*aspectRatio;
 			draw();
 		}
 
 		override public function set displayShelfHeight(h:int):void {
-			pageHeight = h;
+			pageHeight = .8 * h;
 		}
 		
 		private function draw():void {
 			var g:Graphics = shape.graphics;
 			g.clear();
-			g.beginFill(0xFFFFFF, 0.99);
+			g.lineStyle(2, 0xCCCCCC, 0.9);
+			g.beginFill(0x555555, 0.97);
 			g.drawRect(0, 0, explicitWidth, explicitHeight);
 			g.endFill();
 		}
@@ -47,7 +51,7 @@ package states
 			var xArr:Array = stroke.getXSamples();
 			var yArr:Array = stroke.getYSamples();
 			var newStroke:InkStroke = new InkStroke();
-			newStroke.inkColor = 0x222266;
+			newStroke.inkColor = 0xCDCDDD;
 			for (var i:int=0; i<xArr.length; i++) {
 				newStroke.addPoint(xArr[i], yArr[i]);
 			}
