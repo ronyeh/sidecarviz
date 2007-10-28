@@ -53,13 +53,38 @@ package states
 			var rsw:Number = rw / pageWidthInches * explicitWidth;
 			var rsh:Number = rh / pageHeightInches * explicitHeight;
 
-			g.clear();
 			g.lineStyle(1, 0x444444, 0.6);
-			g.beginFill(0xCCCCCC, 0.15);
+			g.beginFill(0xCCCCCC, 0.1);
 			g.drawRect(rsx, rsy, rsw, rsh);
 			g.endFill();
 			addChild(reg);
 		}
+		
+		private var inkSprite:Sprite = null;
+		
+		public function addSample(xSample:Number, ySample:Number):void {
+			var sx:Number = (xSample + currActiveRegionX) / pageWidthInches * explicitWidth;
+			var sy:Number = (ySample + currActiveRegionY) / pageHeightInches * explicitHeight;
+
+			var g:Graphics;
+
+			if (inkSprite == null) {
+				inkSprite = new Sprite();
+				addChild(inkSprite);
+				g = inkSprite.graphics;
+				g.lineStyle(3, 0x333333, 0.75);
+				g.moveTo(sx, sy);
+			} else {
+				g = inkSprite.graphics;
+				g.lineStyle(3, 0x333333, 0.75);
+				g.lineTo(sx, sy);
+			}
+		}
+
+
+		private var currActiveRegionX:Number = 0;
+		private var currActiveRegionY:Number = 0;
+		
 
 		public function addCurrentlyActiveRegion(rx:Number, ry:Number, rw:Number, rh:Number):void {
 			var reg:Sprite = new Sprite();
@@ -70,9 +95,12 @@ package states
 			var rsw:Number = rw / pageWidthInches * explicitWidth;
 			var rsh:Number = rh / pageHeightInches * explicitHeight;
 
+			currActiveRegionX = rx;
+			currActiveRegionY = ry;
+
 			g.clear();
 			g.lineStyle(2, 0x444444, 0.8);
-			g.beginFill(0xFDFDFFF, 0.45);
+			g.beginFill(0x5892e2, 0.25);
 			g.drawRect(rsx, rsy, rsw, rsh);
 			g.endFill();
 			addChild(reg);

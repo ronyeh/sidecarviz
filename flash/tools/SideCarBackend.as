@@ -116,13 +116,25 @@ package tools {
 				case "currentlyEditing":
 					gui.interactionHistory.addData("Edit File", msg.@fileName);
 					break;
+
+				case "eventHandledOnSheet":
+					trace(event.text);
+					
+					// iterate through all regions....
+					var regions:XMLList = msg.children();
+					// loop through the properties of this item
+					for (var i:int=0; i<regions.length(); i++) {
+						var regXML:XML = regions[i] as XML;
+						trace("Region: " + regXML.@name);
+						currEventFiredState.addRegion(parseFloat(regXML.@rX),parseFloat(regXML.@rY), parseFloat(regXML.@rW), parseFloat(regXML.@rH));
+					}
+					
+					break;
             	case "eventHandler":
             		addSystemOutputData(msg.@component, msg.@handlerName, "");
-
-
 					// get information on what region got input...
 					// visualize this with a new Event
-					addEventFiredState(parseFloat(msg.@rX), parseFloat(msg.@rY), parseFloat(msg.@rW), parseFloat(msg.@rH));
+					currEventFiredState = addEventFiredState(parseFloat(msg.@rX), parseFloat(msg.@rY), parseFloat(msg.@rW), parseFloat(msg.@rH));
 					
 					break;
 				case "penDown":
@@ -140,6 +152,11 @@ package tools {
 					timeOfLastPenUp = new Date().time;
 					var stroke:InkStroke = gui.systemInternals.penUp(parseInt(msg.@penID), msg.@x, msg.@y);
 					gui.shelf.addInkStroke(stroke);
+					break;
+				case "penSampleHandled":
+					if (currEventFiredState!=null) {
+						currEventFiredState.addSample(parseFloat(msg.@xInches), parseFloat(msg.@yInches));
+					}
 					break;
 				case "penSample":
 					gui.systemInternals.penSample(parseInt(msg.@penID), msg.@x, msg.@y);
@@ -178,15 +195,19 @@ package tools {
 			gui.systemInternals.addHandlerItem(handlerName, regName, sheetName);
 		}
 
+		private var currEventFiredState:EventFiredState = null;
+
 		// adds a state to the shelf
 		public function addGUIOutputState():void {
 			var state:State = new GUIFeedbackState();
 			gui.shelf.addItem(state);
 		}
-		public function addEventFiredState(rX:Number, rY:Number, rW:Number, rH:Number):void {
+		
+		public function addEventFiredState(rX:Number, rY:Number, rW:Number, rH:Number):EventFiredState {
 			var state:EventFiredState = new EventFiredState();
 			gui.shelf.addItem(state);
 			state.addCurrentlyActiveRegion(rX, rY, rW, rH);
+			return state;
 		}
 		public function addPageState():void {
 			var state:State = new InkInputState();
