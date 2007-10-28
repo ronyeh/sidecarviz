@@ -332,7 +332,7 @@ package components {
             m.a = _horizontalScale;
             
             
-            trace("Shear: " + _verticalShear + "  Scale: " + _horizontalScale);
+            // trace("Shear: " + _verticalShear + "  Scale: " + _horizontalScale);
 
             
             /*     position the content.  we want it centered horizontally. vertically, we want it to look as though it's at yPosition, but 

@@ -3,6 +3,7 @@ package sidecarviz;
 import papertoolkit.application.Application;
 import papertoolkit.events.PenEvent;
 import papertoolkit.events.handlers.InkHandler;
+import papertoolkit.events.handlers.MarkingGestureHandler;
 import papertoolkit.events.handlers.ClickHandler.ClickAdapter;
 import papertoolkit.paper.Region;
 import papertoolkit.paper.Sheet;
@@ -26,20 +27,29 @@ public class ReplayTest {
 	public ReplayTest() {
 		Application application = new Application("Replay");
 		Sheet sheet = new Sheet(SheetSize.A5);
-		Region inkReg = sheet.createRegion(1, 1, 4, 4);
+		Region inkReg = sheet.createRegion(1, 1, 6.5, 4);
 		inkReg.addEventHandler(new InkHandler() {
 			public void handleInkStroke(PenEvent event, InkStroke mostRecentStroke) {
-				//no println needed!
+				// no println needed!
 				// DebugUtils.println("Inked for " + mostRecentStroke.getDuration() + " ms.");
 			}
 		});
-		Region region = sheet.createRegion(1, 5, 4, 2);
+
+		Region region = sheet.createRegion(1, 6, 3, 2);
 		region.addEventHandler(new ClickAdapter() {
 			public void clicked(PenEvent e) {
 				// no println needed!
 				// DebugUtils.println("Clicked at " + e.getPercentageLocation());
 			}
 		});
+
+		Region markregion = sheet.createRegion(6, 5.5, 2, 2);
+		markregion.addEventHandler(new MarkingGestureHandler() {
+			public void handleMark(PenEvent e, MarkDirection dir) {
+				
+			}
+		});
+		
 		application.addSheet(sheet);
 		application.run();
 		// on run, we assume sidecar is already running
